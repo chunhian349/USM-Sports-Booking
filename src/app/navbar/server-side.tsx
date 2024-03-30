@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import NavAction from "./client-render";
+import NavAction from "./client-side";
 
 export default async function Navbar() {
     const supabase = createClient()

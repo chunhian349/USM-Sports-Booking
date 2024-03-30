@@ -9,6 +9,7 @@ function reset() {
 }
 
 export default function LoginPage() {
+  // Note: It seems that the code works without value and onChange props for the Input components, useState and handle functions might be unnecessary
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -22,11 +23,11 @@ export default function LoginPage() {
       <form>
         <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
           <FormLabel htmlFor="email">Email:</FormLabel>
-          <Input name="email" type="email" value={email} onChange={handleEmailChange} required />   
+          <Input id="email" name="email" type="email" value={email} onChange={handleEmailChange} required />   
         </FormControl>
         <FormControl isRequired mb={5}>
           <FormLabel htmlFor="password">Password:</FormLabel>
-          <Input name="password" type="password" value={password} onChange={handlePasswordChange} required />
+          <Input id="password" name="password" type="password" value={password} onChange={handlePasswordChange} required />
         </FormControl>
         <Flex>
           <Spacer></Spacer>
@@ -36,7 +37,5 @@ export default function LoginPage() {
         </Flex>
       </form>
     </Container>
-
-
   )
 }
