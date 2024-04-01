@@ -47,7 +47,6 @@ export async function signup(formData: FormData) {
     redirect('/error')
   }
 
-  // TODO: Inform user to verify email
   revalidatePath('/', 'layout')
   redirect('/')
 }

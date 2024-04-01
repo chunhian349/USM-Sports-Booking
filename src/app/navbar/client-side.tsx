@@ -18,12 +18,9 @@ export default function NavAction({ user }: { user: User | null }) {
     (
         // Logged in
         <Flex bg="white" shadow="base" p={4} align="center" justify="space-between">
-            <Text fontSize="2xl" fontWeight="bold">USM Sports Booking</Text>
+            <Link href='/' fontSize="2xl" fontWeight="bold" style={{textDecoration:'none'}}>USM Sports Booking</Link>
             <Flex mr={6}>
                 <Text borderRightColor="#970bf5" borderRightWidth={3} pr={2}>{user.email}</Text>
-                {/* <Box as="form" action="/auth/signout" method="post">
-                    <Link>Logout</Link>
-                </Box> */}
                 <Box as="form" action="/auth/signout" method="post" ml={2}>
                     <Link as="button" type="submit">
                         Logout
