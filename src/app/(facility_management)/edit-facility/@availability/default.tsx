@@ -1,0 +1,73 @@
+'use server'
+
+import { redirect } from 'next/navigation'
+import FacilityAvailability from './client-side'
+import { createClient } from '@/utils/supabase/server'
+import { revalidatePath } from 'next/cache'
+
+const supabase = createClient()
+
+export async function AddCourt(court_name: string, court_status: boolean, facility_id: string/*, formData: FormData*/): Promise<any> {
+    // const unpackedData = {
+    //     courtName: formData.get('courtname') as string,
+    //     courtStatus: Boolean(formData.get('courtstatus')),
+    // }
+
+    const { error } = await supabase
+        .from('Court')
+        .insert({
+            court_name: court_name,
+            court_status: court_status,
+            fk_facility_id: facility_id,
+        })
+        .select()
+
+    console.error(error)
+    //revalidatePath('/edit-facility/?facility_id=' + facility_id)
+    //redirect('/edit-facility/?facility_id=' + facility_id)
+}
+
+export async function DeleteCourt(/*facility_id: string, */court_id: string): Promise<any> {
+    const { error } = await supabase
+        .from('Court')
+        .delete()
+        .eq('court_id', court_id)
+
+    console.error(error)
+    //revalidatePath('/edit-facility/?facility_id=' + facility_id)
+    //redirect('/edit-facility/?facility_id=' + facility_id)
+}
+
+export default async function FacilityAvailabilityPage(facility_id: JSON | null) {
+    const paramObj = JSON.parse(JSON.stringify(facility_id))
+
+    // Data from Court table
+    // let courtData = await supabase
+    //     .from('Court')
+    //     .select('*')
+    //     .eq('fk_facility_id', paramObj.searchParams.facility_id)
+
+    //console.log("Server courtData: " + JSON.stringify(courtData.data))
+
+    // Data from TimeSlot table, for each court
+    // let timeslotData : any = []
+    // const courtDataLength = courtData.data?.length != undefined ? courtData.data?.length : 0
+    // for (let index = 0; index < courtDataLength; index++) {
+    //     let { data, error } = await supabase
+    //         .from('BookedTimeSlot')
+    //         .select('*')
+    //         .eq('fk_court_id', courtData.data?.[index].court_id)
+
+    //     // Deep copy from data to timeslotData
+    //     let tempData = JSON.parse(JSON.stringify(data))
+    //     timeslotData.push(tempData)
+    // }
+
+    return (
+        <FacilityAvailability 
+            //courtData={courtData.data ? courtData.data : []} 
+            //timeslotData={timeslotData}
+            facility_id={paramObj.searchParams.facility_id}
+        />
+    )
+}
