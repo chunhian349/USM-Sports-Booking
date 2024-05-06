@@ -41,6 +41,7 @@ export async function UpdateFacilityDetails(facility_id: string, formData: FormD
         location: formData.get('location') as string,
         sportsCategory: formData.get('sports') as string,
         phoneNumber: formData.get('phone') as string,
+        status: Boolean(formData.get('status')),
     }
 
     // console.log("Facility Name: " + unpackedData.facilityName)
@@ -55,6 +56,7 @@ export async function UpdateFacilityDetails(facility_id: string, formData: FormD
         facility_location: unpackedData.location,
         sports_category: unpackedData.sportsCategory,
         phone_num: unpackedData.phoneNumber,
+        facility_status: unpackedData.status,
     })
     .eq('facility_id', facility_id)
     .select() 
@@ -81,21 +83,26 @@ export async function UpdateFacilityDesc(facility_id: string, formData: FormData
     redirect('/edit-facility/?facility_id=' + facility_id)
 }
 
-export default async function EditFacilityPage(facility_id: JSON | null) {
+export default async function EditFacilityPage({
+    searchParams,
+} : {
+    searchParams?: {
+        facility_id: string
+    }
+}) {
     
     const { data : { user }} = await supabase.auth.getUser()
     if (!user) {
         redirect('/login')
     }
 
-    //console.log("JSON: " + JSON.stringify(facility_id))
-    const paramObj = JSON.parse(JSON.stringify(facility_id))
-    //console.log("facility_id: " + paramObj.searchParams.facility_id)
+    const facility_id = searchParams?.facility_id || ''
+    //console.log("facility_id: " + facility_id)
 
     let { data: result, error } = await supabase
         .from('SportsFacility')
         .select('*')
-        .eq('facility_id', paramObj.searchParams.facility_id)
+        .eq('facility_id', facility_id)
         //.eq('fk_manager_id', user?.id)
 
     if (error) {

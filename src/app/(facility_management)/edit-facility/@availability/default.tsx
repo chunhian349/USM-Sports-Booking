@@ -38,8 +38,14 @@ export async function DeleteCourt(/*facility_id: string, */court_id: string): Pr
     //redirect('/edit-facility/?facility_id=' + facility_id)
 }
 
-export default async function FacilityAvailabilityPage(facility_id: JSON | null) {
-    const paramObj = JSON.parse(JSON.stringify(facility_id))
+export default async function FacilityAvailabilityPage({
+    searchParams,
+} : {
+    searchParams?: {
+        facility_id: string
+    }
+}) {
+    const facility_id = searchParams?.facility_id || ''
 
     // Data from Court table
     // let courtData = await supabase
@@ -67,7 +73,7 @@ export default async function FacilityAvailabilityPage(facility_id: JSON | null)
         <FacilityAvailability 
             //courtData={courtData.data ? courtData.data : []} 
             //timeslotData={timeslotData}
-            facility_id={paramObj.searchParams.facility_id}
+            facility_id={facility_id}
         />
     )
 }
