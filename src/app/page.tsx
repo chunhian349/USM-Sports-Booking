@@ -1,11 +1,25 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Heading } from "@chakra-ui/react";
+import { createClient } from "@/utils/supabase/server";
+import UserHomepage from "./homepage/user/page";
+import ManagerHomepage from "./homepage/manager/page";
 
-export default function Home() {
+export default async function AppPage() {
+  const supabase = createClient();
+  const { data : { user } } = await supabase.auth.getUser()
+
   return (
-    <>
-      <Heading>Welcome to USM Sports Booking</Heading>
-    </>
+      // (!user || 'user_type' in user) ? (
+      //  <UserHomepage user={user} />
+      // ) : (
+      //  <ManagerHomepage user={user} />
+      // )
+
+      (user?.email == 'chunhian349@gmail.com') ? (
+        <ManagerHomepage user={user} />
+      ) : (
+        <UserHomepage user={user} />
+      )
+
   );
 }
