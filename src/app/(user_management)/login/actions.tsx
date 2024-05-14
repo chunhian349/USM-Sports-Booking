@@ -21,12 +21,12 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    console.log(error)
-    redirect('/error')
+    console.error(error)
+    redirect('/login/error/?error_message=' + error.message)
   }
 
   // TODO: Inform login success (cannot use alert)
-  //revalidatePath('/', 'layout')
+  revalidatePath('/', 'layout')
   redirect('/')
 }
 
@@ -44,7 +44,7 @@ export async function signup(formData: FormData) {
 
   if (error) {
     console.error(error)
-    redirect('/error')
+    redirect('/login/error/?error_message=' + error.message)
   }
 
   revalidatePath('/', 'layout')

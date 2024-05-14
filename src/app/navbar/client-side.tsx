@@ -24,7 +24,11 @@ export default function NavAction({ user }: { user: User | null }) {
                 <Text fontSize={{sm:"xs", lg:"2rem"}}>USM Sports Booking</Text>
             </Link>
             <Flex mr="4lvw">
-                <Text borderRightColor="#970bf5" borderRightWidth={3} pr={2} fontSize={{sm:"xs", lg:"large"}}>{user.email}</Text>
+                <Text borderRightColor="#970bf5" borderRightWidth={3} pr={2} fontSize={{sm:"xs", lg:"large"}}>
+                    <Link href='/account'>
+                        {user.email}
+                    </Link>
+                </Text>
                 <Box as="form" action="/auth/signout" method="post" ml={2}>
                     <Link as="button" type="submit" fontSize={{sm:"xs", lg:"large"}}>
                         Logout
