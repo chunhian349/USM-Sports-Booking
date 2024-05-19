@@ -37,6 +37,7 @@ export default function FacilityAvailability({/*courtData, timeslotData, */facil
 					setCourtDataState(courtData)
 				}
 			} catch (error) {
+				console.log("api/getcourt failed")
 				console.error(error)
 			}
 		}
@@ -203,7 +204,7 @@ export default function FacilityAvailability({/*courtData, timeslotData, */facil
 								<Input id='courtname' name="courtname" type='text' defaultValue="Court"></Input>
 							</FormControl>
 							<FormControl mb={5} w={{md:"20rem", lg: "20rem"}}>
-								<FormLabel htmlFor="courtstatus">Facility Status:</FormLabel>
+								<FormLabel htmlFor="courtstatus">Court Status:</FormLabel>
 								<Switch id="courtstatus" name="courtstatus" size="lg" colorScheme="purple" defaultChecked/>
 							</FormControl>
 							<Input type="hidden" name="facility_id" value={facility_id}></Input>

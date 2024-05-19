@@ -1,7 +1,7 @@
 'use client'
 
-import { Container, Heading, Box, Text, Image, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Divider, Input, Link, AspectRatio, FormLabel, FormControl, Icon } from "@chakra-ui/react"
-import { EditIcon, PhoneIcon, TimeIcon } from "@chakra-ui/icons"
+import { Container, Heading, Box, Text, Image, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Divider, Input, Link, AspectRatio, FormLabel, FormControl, Icon, Switch, Center, Textarea } from "@chakra-ui/react"
+import { EditIcon, InfoIcon, PhoneIcon, TimeIcon } from "@chakra-ui/icons"
 import { useState } from 'react'
 import { UpdateFacilityImage, UpdateFacilityDetails, UpdateFacilityDesc } from './default'
 import { FaMapLocationDot } from "react-icons/fa6";
@@ -41,13 +41,15 @@ export default function EditFacility({facility, user_id}: any) {
                 <ModalCloseButton />
                 <ModalBody>
                     <form action={updateFacilityImageWithId}>
-                        <FormControl isRequired>
+                        <FormControl isRequired mb={5}>
                             <FormLabel htmlFor='image'>Upload a new image</FormLabel>
-                            <Input id='image' name="image" type='file' accept='image/*'></Input>
+                            <Input id='image' name="image" type='file' accept='image/*' pt={1}></Input>
                         </FormControl>
-                        <Button type="submit" colorScheme='blue'>
-                            Update Image
-                        </Button>
+                        <Center>
+                            <Button type="submit" colorScheme='blue'>
+                                Update Image
+                            </Button>
+                        </Center>
                     </form>
                 </ModalBody>
                 <ModalFooter>
@@ -67,29 +69,36 @@ export default function EditFacility({facility, user_id}: any) {
                     <ModalCloseButton />
                     <ModalBody>
                         <form action={updateFacilityDetailsWithId}>
-                            <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
+                            <FormControl isRequired mb={5} >
                                 <FormLabel htmlFor="name">Facility Name:</FormLabel>
-                                <Input id="name" name="name" type="text" required defaultValue={facility.facility_name}/>
+                                <Input id="name" name="name" type="text" required defaultValue={facility.facility_name} _hover={{borderColor:"#970bf5", borderWidth:"2"}} _focus={{borderColor:"#970bf5", borderWidth:"3"}}/>
                             </FormControl>
 
-                            <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
+                            <FormControl isRequired mb={5}>
                                 <FormLabel htmlFor="location">Location:</FormLabel>
-                                <Input id="location" name="location" type="text" required defaultValue={facility.facility_location}/>
+                                <Input id="location" name="location" type="text" required defaultValue={facility.facility_location} _hover={{borderColor:"#970bf5", borderWidth:"2"}} _focus={{borderColor:"#970bf5", borderWidth:"3"}}/>
                             </FormControl>
 
-                            <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
+                            <FormControl isRequired mb={5}>
                                 <FormLabel htmlFor="sports">Sports Category:</FormLabel>
-                                <Input id="sports" name="sports" type="text" required defaultValue={facility.sports_category}/>
+                                <Input id="sports" name="sports" type="text" required defaultValue={facility.sports_category} _hover={{borderColor:"#970bf5", borderWidth:"2"}} _focus={{borderColor:"#970bf5", borderWidth:"3"}}/>
                             </FormControl>
 
-                            <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
+                            <FormControl isRequired mb={5}>
                                 <FormLabel htmlFor="phone">Phone Number:</FormLabel>
-                                <Input id="phone" name="phone" type="text" required defaultValue={facility.phone_num}/>
+                                <Input id="phone" name="phone" type="text" required defaultValue={facility.phone_num} _hover={{borderColor:"#970bf5", borderWidth:"2"}} _focus={{borderColor:"#970bf5", borderWidth:"3"}}/>
                             </FormControl>
 
-                            <Button type="submit" colorScheme='blue'>
-                                Update Facility Details
-                            </Button>
+                            <FormControl mb={5}>
+                                <FormLabel htmlFor="status">Facility Status:</FormLabel>
+                                <Switch id="status" name="status" defaultValue={facility.status} size="lg" colorScheme="purple"/>
+                            </FormControl>
+
+                            <Center>
+                                <Button type="submit" colorScheme="blue" rounded="20">
+                                    Update Facility Details
+                                </Button>
+                            </Center>
                         </form>
                     </ModalBody>
                     <ModalFooter>
@@ -100,6 +109,7 @@ export default function EditFacility({facility, user_id}: any) {
             <Text as="b" mb={1}><Icon as={FaMapLocationDot} mr={1}/>{facility.facility_location}</Text>
             <Text mb={1}><Icon as={MdCategory} mr={1}/>{facility.sports_category}</Text>
             <Text mb={1}><PhoneIcon mr={1} />{facility.phone_num}</Text>
+            <Text mb={1} textColor={(facility.facility_status? "green": "red")}><InfoIcon color="black" mr={1.5} />{(facility.facility_status? "Active": "Inactive")}</Text>
             
             <Divider my={3}/>
 
@@ -113,13 +123,15 @@ export default function EditFacility({facility, user_id}: any) {
                     <ModalCloseButton />
                     <ModalBody>
                         <form action={updateFacilityDescWithId}>
-                            <FormControl isRequired mb={5}>
+                            <FormControl isRequired mb={3}>
                                 <FormLabel htmlFor='description'>Description</FormLabel>
-                                <Input id='description' name="description" type='text' defaultValue={facility.facility_desc}></Input>
+                                <Input h="15lvh" as="textarea" id='description' name="description" type='text' defaultValue={facility.facility_desc}></Input>
                             </FormControl>
-                            <Button type="submit" colorScheme='blue'>
-                                Update Description
-                            </Button>
+                            <Center>
+                                <Button type="submit" colorScheme='blue'>
+                                    Update Description
+                                </Button>
+                            </Center>
                         </form>
                     </ModalBody>
                     <ModalFooter>

@@ -37,7 +37,7 @@ export async function SubmitFacilityForm(formData: FormData): Promise<any> {
     status: Boolean(formData.get('status')),
   }
 
-  console.log("File Name: " + data.imageFile.name)
+  // console.log("File Name: " + data.imageFile.name)
   // console.log("Facility Name: " + data.facilityName)
   // console.log("Location: " + data.location)
   // console.log("Phone Number: " + data.phoneNumber)
@@ -49,40 +49,28 @@ export async function SubmitFacilityForm(formData: FormData): Promise<any> {
 
   InsertImage(data.imageFile, user.id)
 
-  {
-    const image_url = (process.env.NEXT_PUBLIC_IMAGE_BUCKET_URL) + "facility/" + user.id + "/" + data.imageFile.name
-    const { error } = await supabase
-    .from('SportsFacility')
-    .insert([
-      { 
-        facility_name: data.facilityName,
-        facility_desc: data.description,
-        facility_location: data.location,
-        facility_status: data.status,
-        phone_num: data.phoneNumber,
-        sports_category: data.sportsCategory,
-        operating_hours: JSON.stringify(data.operatingHours),
-        image_url: image_url,
-        fk_manager_id: user.id,
-      }
-    ])
-    .select()
-
-    if (error) {
-      return error
+  const image_url = (process.env.NEXT_PUBLIC_IMAGE_BUCKET_URL) + "facility/" + user.id + "/" + data.imageFile.name
+  const { data: insertData, error } = await supabase
+  .from('SportsFacility')
+  .insert([
+    { 
+      facility_name: data.facilityName,
+      facility_desc: data.description,
+      facility_location: data.location,
+      facility_status: data.status,
+      phone_num: data.phoneNumber,
+      sports_category: data.sportsCategory,
+      operating_hours: JSON.stringify(data.operatingHours),
+      image_url: image_url,
+      fk_manager_id: user.id,
     }
-  }
-
-  let { data: result , error } = await supabase
-    .from('SportsFacility')
-    .select('facility_id')
-    .eq('facility_name', data.facilityName)
-    .eq('fk_manager_id', user.id)
-    .order('created_at', { ascending: false })
+  ])
+  .select()
+  .single()
 
   if (error) {
-    console.error(error)
+    return error
   }
 
-  redirect('/edit-facility/?facility_id=' + result?.at(0)?.facility_id)
+  redirect('/edit-facility/?facility_id=' + insertData?.facility_id)
 }

@@ -12,7 +12,7 @@ export default function AddFacility() {
         event.preventDefault();
         setIsLoading(true);
 
-        console.log(event.currentTarget)
+        //console.log(event.currentTarget)
         const formData = new FormData(event.currentTarget);
 
         const error = await SubmitFacilityForm(formData);
@@ -27,40 +27,40 @@ export default function AddFacility() {
     }
 
     return (
-        <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} mt="3lvh" borderWidth={2} borderColor="grey.300" rounded={20}>
+        <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} mt="3lvh" borderColor={"grey.300"} borderWidth={1} boxShadow={"lg"} rounded={20}>
             <Heading mb={10}>Add Facility</Heading>
 
             <form onSubmit={handleFormSubmit}>
                 <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
                     <FormLabel htmlFor="image">Facility Image:</FormLabel>
                     {/* <Container borderWidth={1} borderColor="grey.100" rounded={5}> */}
-                        <Input id="image" name="image" type="file" accept='image/*' opacity={1} required /> 
+                        <Input id="image" name="image" type="file" accept='image/*' opacity={1} borderColor="#970bf5" borderWidth={2} pt={1} required /> 
                     {/* </Container> */}
                 </FormControl>
 
                 <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
                     <FormLabel htmlFor="name">Facility Name:</FormLabel>
-                    <Input id="name" name="name" type="text" required defaultValue="Facility A"/>
+                    <Input id="name" name="name" type="text" required defaultValue="Facility A" borderColor="#970bf5" borderWidth={2}/>
                 </FormControl>
 
                 <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
                     <FormLabel htmlFor="location">Location:</FormLabel>
-                    <Input id="location" name="location" type="text" required defaultValue="Minden, Main Campus"/>
+                    <Input id="location" name="location" type="text" required defaultValue="Minden, Main Campus" borderColor="#970bf5" borderWidth={2}/>
                 </FormControl>
 
                 <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
                     <FormLabel htmlFor="phone">Phone Number:</FormLabel>
-                    <Input id="phone" name="phone" type="text" required defaultValue="+04-1234567"/>
+                    <Input id="phone" name="phone" type="text" required defaultValue="+04-1234567" borderColor="#970bf5" borderWidth={2}/>
                 </FormControl>
 
                 <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
                     <FormLabel htmlFor="sports">Sports Category:</FormLabel>
-                    <Input id="sports" name="sports" type="text" required defaultValue="Badminton"/>
+                    <Input id="sports" name="sports" type="text" required defaultValue="Badminton" borderColor="#970bf5" borderWidth={2}/>
                 </FormControl>
 
                 <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
                     <FormLabel htmlFor="hours">Operating hours:</FormLabel>
-                    <Input id="hours" name="hours" type="text" required defaultValue="8am - 10pm"/>
+                    <Input id="hours" name="hours" type="text" required defaultValue="8am - 10pm" borderColor="#970bf5" borderWidth={2}/>
                 </FormControl>
 
                 {/* <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
@@ -70,7 +70,7 @@ export default function AddFacility() {
 
                 <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
                     <FormLabel htmlFor="description">Description:</FormLabel>
-                    <Input id="description" name="description" type="text" required defaultValue="6 badminton courts"/>
+                    <Input id="description" name="description" type="text" required defaultValue="6 badminton courts" borderColor="#970bf5" borderWidth={2}/>
                 </FormControl>
 
                 <FormControl mb={5} w={{md:"20rem", lg: "20rem"}}>

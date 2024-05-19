@@ -20,7 +20,6 @@ export async function AddCourt(court_name: string, court_status: boolean, facili
             court_status: court_status,
             fk_facility_id: facility_id,
         })
-        .select()
 
     console.error(error)
     //revalidatePath('/edit-facility/?facility_id=' + facility_id)
