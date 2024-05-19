@@ -14,25 +14,21 @@ export default async function FacilityDetailsPage({
 }) {
     
     const { data : { user }} = await supabase.auth.getUser()
-    // if (!user) {
-    //     redirect('/login')
-    // }
 
-    //console.log("JSON: " + JSON.stringify(facility_id))
-    //const paramObj = JSON.parse(JSON.stringify(facility_id))
     const facility_id = searchParams?.facility_id || ''
-    //console.log("facility_id: " + paramObj.searchParams.facility_id)
 
     let { data: result, error } = await supabase
         .from('SportsFacility')
         .select('*')
         .eq('facility_id', facility_id)
-        //.eq('fk_manager_id', user?.id)
+        .single()
 
     if (error) {
+        console.log("FacilityDetails select SportsFacility failed")
         console.error(error)
+        redirect('/')
     }
 
     //console.log("User id from page: " + user.id)
-    return <FacilityDetails facility={result?.at(0)} user_id={user? user.id : null}></FacilityDetails>
+    return <FacilityDetails facility={result} user_id={user? user.id : null}></FacilityDetails>
 }
