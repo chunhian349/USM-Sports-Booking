@@ -2,8 +2,8 @@
 import { type User } from '@supabase/supabase-js'
 import { Box, Flex, Text, Button, Link, Container } from '@chakra-ui/react'
 
-export default function NavAction({ user }: { user: User | null }) {
-    return (user == null)?(
+export default function NavAction({user_id, user_email, user_type} : {user_id: string | null, user_email: string | null, user_type : string | null}) {
+    return (user_id == null) ? (
         // Not logged in
         <Flex bg="white" shadow="base" p={4} align="center" justify="space-between" h="10svh">
             <Link href='/' fontWeight="bold" fontSize={{sm:"xs", lg:"2rem"}} style={{textDecoration:'none'}} ml="4lvw">USM Sports Booking</Link>
@@ -16,8 +16,7 @@ export default function NavAction({ user }: { user: User | null }) {
                 {/* <Button fontSize="sm" bg="#970bf5" textColor="white" w="6rem" rounded="90" _hover={{ bg: "#bb88f9"}}>Sign up</Button> */}
             </Box>
         </Flex>
-    ):
-    (
+    ): (
         // Logged in
         <Flex bg="white" shadow="base" p={4} align="center" justify="space-between" h="10svh">
             <Link href='/' fontWeight="bold" style={{textDecoration:'none'}} ml="4lvw">
@@ -26,7 +25,7 @@ export default function NavAction({ user }: { user: User | null }) {
             <Flex mr="4lvw">
                 <Text borderRightColor="#970bf5" borderRightWidth={3} pr={2} fontSize={{sm:"xs", lg:"large"}}>
                     <Link href='/account'>
-                        {user.email}
+                        {user_email}
                     </Link>
                 </Text>
                 <Box as="form" action="/auth/signout" method="post" ml={2}>

@@ -8,7 +8,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   let { data, error } = await supabase
     .from('Court')
-    .select('*')
+    .select('court_id, court_name, court_status')
     .eq('fk_facility_id', facility_id)
 
   if (error) {

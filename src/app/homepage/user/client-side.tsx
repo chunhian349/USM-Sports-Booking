@@ -39,7 +39,7 @@ const ImageWithTextAndButton = ({ imageUrl, heading, text}: { imageUrl: string, 
     )
 }
 
-export default function ManagerClient(/*{ user }: { user: User }, */{ facilities }: { facilities: any[] }) {
+export default function UserClient(/*{ user }: { user: User }, */{ facilities }: { facilities: any[] }) {
     //console.log(facilities)
     return (
         <Container maxW="90lvw" mt={5}>
