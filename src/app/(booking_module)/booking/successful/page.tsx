@@ -1,52 +1,10 @@
 'use server'
-
+import { BookingSummaryData } from "../summary/page"
+import BookingSuccess from "./client-side"
 import { createClient } from '@/utils/supabase/server'
-import BookingSummary from './client-side'
 import { redirect } from 'next/navigation'
 
-export type BookingSummaryData = {
-    timeslot_date: string,
-    timeslot_start: string,
-    timeslot_end: string,
-    timeslot_rate: number,
-    court_name: string,
-}
-
-export async function MakePayment(booking_id:string, paymentMethod: string, paymentAmount: number) {
-    let paymentSuccess = false;
-
-    // TODO: Dummy payment gateway
-    if (paymentMethod == "Online Banking") {
-        paymentSuccess = true
-    }
-    else if (paymentMethod == "Credit Card") {
-        paymentSuccess = true
-    }
-    else {
-        return "Invalid payment method"
-    }
-
-    if (paymentSuccess) {
-        const supabase = createClient()
-        const { data: updateBooking, error: updateBookingError } = await supabase
-            .from('Booking')
-            .update({
-                'transaction_amount': paymentAmount,
-                'transaction_method': paymentMethod,
-            })
-            .eq('booking_id', booking_id)
-
-        if (updateBookingError) {
-            console.log("Update Booking failed")
-            console.error(updateBookingError)
-            return "Failed to update booking"
-        }
-
-        redirect('/booking/successful/?booking_id=' + booking_id)
-    }
-}
-
-export default async function BookingSummaryPage({
+export default async function BookingSuccessPage({
     searchParams,
 } : {
     searchParams? : {
@@ -55,10 +13,23 @@ export default async function BookingSummaryPage({
 }) {
     const booking_id = searchParams?.booking_id
     if (!booking_id) {
+        console.log("No booking_id found at booking summary page")
         redirect('/')
     }
 
     const supabase = createClient()
+    const { data: bookingData, error: selectBookingError } = await supabase
+        .from('Booking')
+        .select('booking_id, transaction_time, transaction_amount, transaction_method')
+        .eq('booking_id', booking_id)
+        .single()
+
+    if (selectBookingError || !bookingData) {
+        console.log("Select Booking failed at booking summary page")
+        console.error(selectBookingError)
+        redirect('/')
+    }
+
     const { data: bookedTimeslot, error: selectTimeslotError } = await supabase
         .from('BookedTimeslot')
         .select('timeslot_date, timeslot_start, timeslot_end, timeslot_rate, fk_court_id, Court(court_name)')
@@ -86,6 +57,18 @@ export default async function BookingSummaryPage({
     
     // console.log(facilityData)
 
+    const { data: userData, error: selectUserError } = await supabase
+        .from('Booking')
+        .select('User(full_name, phone_num)')
+        .eq('booking_id', booking_id)
+        .single()
+    
+    if (selectUserError || !userData) {
+        console.log("Select User failed at booking summary page")
+        console.error(selectUserError)
+        redirect('/')
+    }
+
     const bookingSummaryData: BookingSummaryData[] = [];
     bookedTimeslot.map((timeslot: any) => {
         bookingSummaryData.push({
@@ -97,5 +80,6 @@ export default async function BookingSummaryPage({
         })
     })
 
-    return <BookingSummary booking_id={booking_id} bookingSummaryData={bookingSummaryData} facilityData={facilityData.SportsFacility } />
+
+    return <BookingSuccess userData={userData.User} bookingData={bookingData} bookingSummaryData={bookingSummaryData} facilityData={facilityData.SportsFacility} />
 }

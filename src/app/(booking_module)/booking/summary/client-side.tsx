@@ -1,23 +1,32 @@
 'use client'
 
-import { Container, Heading, Flex, Image, Spacer, VStack, Text, Divider, Link, Center, Box, Button } from "@chakra-ui/react"
-import { type BookingSummaryData } from "./page"
+import { Container, Heading, Flex, Image, Spacer, VStack, Text, Divider, Link, Center, Box, Button  } from "@chakra-ui/react"
+import { MakePayment, type BookingSummaryData } from "./page"
+import { useState } from "react"
 
 export default function BookingSummary({ 
-    bookingSummaryData, facilityData
+    booking_id, bookingSummaryData, facilityData
 } : { 
-    bookingSummaryData: BookingSummaryData[], facilityData: {facility_name: string, image_url: string}
+    booking_id: string, bookingSummaryData: BookingSummaryData[], facilityData: {facility_name: string, facility_photo: string}
 }) {
+    const [paymentMethod, setPaymentMethod] = useState("Online Banking")
+    let paymentAmount = 0
+
+    function HandlePaymentButton(booking_id:string, paymentMethod: string, paymentAmount: number) {
+        MakePayment(booking_id, paymentMethod, paymentAmount)
+    }
+
     return (
         <Container my={10} px={8} py={5} maxH="90lvw" borderWidth={2} borderColor="#970bf5" rounded={10}>
             <Heading mb={5}>Booking Summary</Heading>
             {
                 bookingSummaryData.map((data : BookingSummaryData, index: number) => {
+                    paymentAmount += data.timeslot_rate
                     return (
-                        <>
-                            <Divider mb={5} />                  
-                            <Flex key={index} mb={5}>
-                                <Image src={facilityData.image_url} alt="Facility Image" mt={1} aspectRatio={2} w="200px" h="125px" rounded={15}></Image>
+                        <div key={index}>
+                            <Divider  borderColor="#970bf5" mb={5} />                  
+                            <Flex mb={5}>
+                                <Image src={facilityData.facility_photo} alt="Facility Image" mt={1} aspectRatio={2} w="200px" h="125px" rounded={15}></Image>
                                 <Spacer />
                                 <VStack maxW="250px">
                                     <Heading size={"sm"} alignSelf="end" textAlign="right">{facilityData.facility_name} </Heading>
@@ -27,35 +36,37 @@ export default function BookingSummary({
                                         <Text fontSize={"xs"} textAlign="right">{data.court_name}</Text>
                                     </VStack>
                                     <Heading size={"sm"} alignSelf="end" textAlign="right">RM{(data.timeslot_rate).toFixed(2)}</Heading>                                
-                                    <Link textColor="red" fontSize={"sm"} alignSelf="end" textAlign="right">Delete</Link>
+                                    {/* <Link textColor="red" fontSize={"sm"} alignSelf="end" textAlign="right" onClick={onOpen}>Delete</Link> */}
                                 </VStack>
                             </Flex>
-                        </>
+                        </div>
                     )
                 })
             }
 
-            <Divider mb={3} />
+            <Divider mb={3} borderColor="#970bf5" />
             <Flex mb={3} >
                 <Spacer />
                 <Text as="b" size={"sm"} alignSelf="right" textAlign="right" mr={10}>Total:</Text>
-                <Text size={"sm"} alignSelf="right" textAlign="right">{bookingSummaryData.reduce((accumulator, data) => {return accumulator + data.timeslot_rate}, 0).toFixed(2)}</Text>
+                <Text as="b" size={"sm"} alignSelf="right" textAlign="right">RM{paymentAmount.toFixed(2)}</Text>
             </Flex>
-            <Divider mb={5} />
+            <Divider mb={5} borderColor="#970bf5" />
 
             <Heading fontSize={"2xl"} mb={3}>Select Payment Method</Heading>
             <Flex mb={5}>
-                <Box as="button" borderWidth={1} borderColor="black" p={5} rounded={10}>
+                <Box as="button" borderWidth={1} borderColor="black" p={5} rounded={10} _hover={{bg:"gray.50"}} _active={{bg:"gray.100"}} 
+                bg={paymentMethod ==  "Online Banking" ? "gray.100" : "white"} onClick={() => setPaymentMethod("Online Banking")}>
                     <Image src="/online-booking-logo.png" alt="Online Banking" aspectRatio={3} maxW="200px" maxH="80px" borderWidth={1} borderColor="black"></Image>
                 </Box>  
                 <Spacer />
-                <Box as="button" borderWidth={1} borderColor="black" p={5} rounded={10}>
+                <Box as="button" borderWidth={1} borderColor="black" p={5} rounded={10} _hover={{bg:"gray.50"}} _active={{bg:"gray.100"}} 
+                bg={paymentMethod == "Credit Card" ? "gray.100" : "white"} onClick={() => setPaymentMethod("Credit Card")}>
                     <Image src="/credit-card-logo.png" alt="Credit Card" aspectRatio={3} maxW="200px" maxH="80px" borderWidth={1} borderColor="black"></Image>
                 </Box>
             </Flex>
 
             <Center>
-                <Button rounded={20} bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}}>Proceed to Payment</Button>
+                <Button rounded={20} bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} onClick={() => HandlePaymentButton(booking_id, paymentMethod, paymentAmount)} >Proceed to Payment</Button>
             </Center>
         </Container>
     )
