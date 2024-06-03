@@ -4,12 +4,10 @@ import { createClient } from "@/utils/supabase/server";
 
 export default async function Navbar() {
     const supabase = createClient();
-    const { data: auth, /*error: getAuthUserError*/ } = await supabase.auth.getUser()
-    // if (getUserResult.error) {
-    //     console.log("Error getting user")
-    //     console.error(getUserResult.error)
-    // }
-    if (!auth.user) {
+    const { data: auth, error: getAuthUserError } = await supabase.auth.getUser()
+    if (getAuthUserError || !auth.user) {
+        console.log("Error getting user")
+        //console.error(getAuthUserError)
         return <NavAction user_id={null} user_email={null} user_type={null} />
     }
 

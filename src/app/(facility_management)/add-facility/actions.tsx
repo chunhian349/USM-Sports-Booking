@@ -49,7 +49,7 @@ export async function SubmitFacilityForm(formData: FormData): Promise<any> {
 
   InsertImage(data.imageFile, user.id)
 
-  const image_url = (process.env.NEXT_PUBLIC_IMAGE_BUCKET_URL) + "facility/" + user.id + "/" + data.imageFile.name
+  const facility_photo = (process.env.NEXT_PUBLIC_IMAGE_BUCKET_URL) + "facility/" + user.id + "/" + data.imageFile.name
   const { data: insertData, error } = await supabase
   .from('SportsFacility')
   .insert([
@@ -61,7 +61,7 @@ export async function SubmitFacilityForm(formData: FormData): Promise<any> {
       phone_num: data.phoneNumber,
       sports_category: data.sportsCategory,
       operating_hours: JSON.stringify(data.operatingHours),
-      image_url: image_url,
+      facility_photo: facility_photo,
       fk_manager_id: user.id,
     }
   ])

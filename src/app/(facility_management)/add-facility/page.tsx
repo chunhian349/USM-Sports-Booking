@@ -32,7 +32,7 @@ export default function AddFacility() {
 
             <form onSubmit={handleFormSubmit}>
                 <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
-                    <FormLabel htmlFor="image">Facility Image:</FormLabel>
+                    <FormLabel htmlFor="image">Facility Photo:</FormLabel>
                     {/* <Container borderWidth={1} borderColor="grey.100" rounded={5}> */}
                         <Input id="image" name="image" type="file" accept='image/*' opacity={1} borderColor="#970bf5" borderWidth={2} pt={1} required /> 
                     {/* </Container> */}
@@ -65,7 +65,7 @@ export default function AddFacility() {
 
                 {/* <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
                     <FormLabel htmlFor="rate">Booking Rate:</FormLabel>
-                    <Input id="rate" name="rate" type="text" value={bookingRate} onChange={handleBookingRateChange} required />
+                    <Input id="rate" name="rate" type="text" required borderColor="#970bf5" borderWidth={2} />
                 </FormControl> */}
 
                 <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>

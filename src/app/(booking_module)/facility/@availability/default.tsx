@@ -53,7 +53,7 @@ export async function MakeBooking(selectedTimeslot: Timeslot[]) {
     }
 
     const { data: bookedTimeslot, error: error_bookedTimeslot} = await supabase
-        .from('BookedTimeSlot')
+        .from('BookedTimeslot')
         .insert(selectedTimeslot.map(timeslot => ({
             timeslot_date: timeslot.timeslot_date,
             timeslot_start: timeslot.timeslot_start,
@@ -66,7 +66,7 @@ export async function MakeBooking(selectedTimeslot: Timeslot[]) {
 
     // Failed booking, redirect to same page for retry
     if (error_bookedTimeslot) {
-        console.log("Insert BookedTimeSlot failed")
+        console.log("Insert BookedTimeslot failed")
         console.error(error_booking_data)
         //redirect('/')
         // TODO: return error, then redirect to same page at client component

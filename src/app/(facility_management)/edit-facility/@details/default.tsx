@@ -21,12 +21,12 @@ export async function UpdateFacilityImage(facility_id: string, user_id: string, 
         .upload('facility/' + user_id + "/" + unpackedData.imageFile.name, unpackedData.imageFile)
     }
     
-    // Update image_url in SportsFacility
+    // Update facility_photo in SportsFacility
     {
-        const image_url = (process.env.NEXT_PUBLIC_IMAGE_BUCKET_URL) + "facility/" + user_id + "/" + unpackedData.imageFile.name
+        const facility_photo = (process.env.NEXT_PUBLIC_IMAGE_BUCKET_URL) + "facility/" + user_id + "/" + unpackedData.imageFile.name
         const { data, error } = await supabase
         .from('SportsFacility')
-        .update({ 'image_url': image_url })
+        .update({ 'facility_photo': facility_photo })
         .eq('facility_id', facility_id)
         .select() 
     }

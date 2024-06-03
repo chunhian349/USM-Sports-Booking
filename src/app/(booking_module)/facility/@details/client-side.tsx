@@ -23,7 +23,7 @@ export default function FacilityDetails({facility, user_id}: any) {
     return (
         <Container maxWidth="90lvw" mt={5}>
             <AspectRatio maxW="600" ratio={6/3} mb={4}>
-                <Image src={facility ? facility.image_url : ""} fallbackSrc="no-image.png" alt="facility_image" objectFit="cover" borderRadius={15}></Image>
+                <Image src={facility ? facility.facility_photo : ""} fallbackSrc="no-image.png" alt="facility_image" objectFit="cover" borderRadius={15}></Image>
             </AspectRatio>
             <Heading mb={2} fontSize={{sm:"large", lg: "x-large"}}>
                 {facility.facility_name}

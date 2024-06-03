@@ -12,7 +12,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     const courtDataLength = (courtData?.length != undefined) ? courtData.length : 0
     for (let index = 0; index < courtDataLength; index++) {
         let { data, error } = await supabase
-            .from('BookedTimeSlot')
+            .from('BookedTimeslot')
             .select('*')
             .eq('fk_court_id', courtData[index].court_id)
             .eq('timeslot_date', date)

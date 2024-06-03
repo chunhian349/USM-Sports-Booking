@@ -9,7 +9,7 @@ export default function AccountForm({ user }: { user: User}) {
   const [loading, setLoading] = useState(true)
   const [fullname, setFullname] = useState('')
   const [phonenum, setPhonenum] = useState('')
-  const [usertype, setUserType] = useState(getUserTypeFromEmail(user.email as string))
+  const [usertype, setUserType] = useState('')
 
   const getProfile = useCallback(async () => {
     try {
@@ -42,43 +42,34 @@ export default function AccountForm({ user }: { user: User}) {
     getProfile()
   }, [user, getProfile])
 
-  function getUserTypeFromEmail(email: string) {
-    const emailDomain = email.split('@')
-
-    if (emailDomain[1].endsWith('student.usm.my')){
-      return 'Student'
-    }
-    else if (emailDomain[1].endsWith('usm.my')){
-      return 'Staff'
-    }
-    else {
-      return 'Private'
-    }
-  }
-
   async function updateProfile() {
     try {
       setLoading(true)
 
-      const { error } = await supabase.from('User').upsert({
-        user_id: user.id as string,
+      const { error } = await supabase
+        .from('User')
+        .update({
+        // user_id: user.id as string,
         full_name: fullname,
         phone_num: phonenum,
-        user_type: usertype
-      })
+        // user_type: usertype
+        })
+        .eq('user_id', user.id)
+
       if (error) throw error
+
       alert('Profile updated!')
     } catch (error) {
       console.log(error)
-      alert('Error updating the data!')
+      alert('Error updating the profile!')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="grey.300" rounded={20}>
-      <Heading mb={10}>Account Profile</Heading>
+    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="#970bf5" rounded={20}>
+      <Heading mb={10}>Profile</Heading>
 
       <form>
         <FormControl mb={5} w={{md:"20rem", lg: "20rem"}}>
@@ -86,7 +77,7 @@ export default function AccountForm({ user }: { user: User}) {
           <Input id="email" name="email" type="email" value={user.email} disabled />   
         </FormControl>
         <FormControl mb={5}>
-          <FormLabel htmlFor="user_type">User type:</FormLabel>
+          <FormLabel htmlFor="user_type">User Type:</FormLabel>
           <Input id="user_type" name="user_type" type="user_type" value={usertype} disabled/>
         </FormControl>
         <FormControl isRequired mb={5}>

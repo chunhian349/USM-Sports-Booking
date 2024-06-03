@@ -58,7 +58,7 @@ export default function UserClient(/*{ user }: { user: User }, */{ facilities }:
                 {facilities.map((facility: any, index: number) => (
                     <Link key={index} href={'/facility?facility_id='+facility.facility_id} w="full" p={4} borderWidth="1px" rounded="md" _hover={{ boxShadow:'base', bgColor:"gray.50" }}>
                     <Flex>
-                        <Image src={facility.image_url} fallbackSrc='no-image.png' alt="Facility Image" w="25lvw" aspectRatio={16/9} rounded={10} mr={5}/>
+                        <Image src={facility.facility_photo} fallbackSrc='no-image.png' alt="Facility Image" w="25lvw" aspectRatio={16/9} rounded={10} mr={5}/>
                         <Flex flexDir='column' justifyContent={'flex-start'}>
                             <Text as="b" fontSize="large">{facility.facility_name}</Text>
                             <Text as="b">{facility.facility_location}</Text>

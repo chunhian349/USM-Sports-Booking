@@ -35,27 +35,6 @@ const ImageWithTextAndButton = ({ imageUrl, heading, buttonText, buttonLink }: {
     )
 }
 
-// Custom component that displays a sports facility card
-// const FacilityCard = (
-//         key: any, 
-//         image_url: string,
-//         facility_name: string,
-//         facility_location: string,
-//         sports_category: string,
-//         facility_status: string,
-//         overall_rating: number
-//     ) => {
-//     return (
-//         <Box w="full" p={4} borderWidth="1px" rounded="md">
-//             <Image src={image_url} fallbackSrc='no-image.png' alt="Facility Image" />
-//             <Text as="b" fontSize="large">{facility_name}</Text>
-//             <Text as="b">{facility_location}</Text>
-//             <Text>{sports_category}</Text>
-//             <Text textColor={(facility_status? "green": "red")}>{facility_status}</Text>
-//         </Box>
-//     )
-// }
-
 export default function ManagerClient(/*{ user }: { user: User }, */{ facilities }: { facilities: any[] }) {
     //console.log(facilities)
     return (
@@ -82,7 +61,7 @@ export default function ManagerClient(/*{ user }: { user: User }, */{ facilities
                 {facilities.map((facility: any, index: number) => (
                     <Link key={index} href={'/edit-facility/?facility_id='+ facility.facility_id} w="full" p={4} borderWidth="1px" rounded="md" _hover={{ boxShadow:'base', bgColor:"gray.50" }}>
                     <Flex>
-                        <Image src={facility.image_url} fallbackSrc='no-image.png' alt="Facility Image" w="25lvw" aspectRatio={16/9} rounded={10} mr={5}/>
+                        <Image src={facility.facility_photo} fallbackSrc='no-image.png' alt="Facility Image" w="25lvw" aspectRatio={16/9} rounded={10} mr={5}/>
                         <Flex flexDir='column' justifyContent={'flex-start'}>
                             <Text as="b" fontSize="large">{facility.facility_name}</Text>
                             <Text as="b">{facility.facility_location}</Text>

@@ -35,7 +35,7 @@ export default function LoginPage() {
         </FormControl>
         <Flex mb={5}>
           <Spacer></Spacer>
-          <Button type="submit" formAction={login} w="6rem" mr={5} bg="#970bf5" color="white" rounded="50" _hover={{ bg: "#7a00cc"}}>Log in</Button>
+          <Button type="submit" formAction={login} w="6rem" mr={5} bg="#970bf5" color="white" rounded="50" _hover={{ bg: "#7a00cc"}}>Login</Button>
           <Button type="submit" formAction={signup} w="6rem" rounded="50">Sign up</Button>
           <Spacer></Spacer>
         </Flex>
