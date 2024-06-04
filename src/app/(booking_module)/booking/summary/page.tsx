@@ -28,7 +28,7 @@ export async function MakePayment(booking_id:string, paymentMethod: string, paym
 
     if (paymentSuccess) {
         const supabase = createClient()
-        const { data: updateBooking, error: updateBookingError } = await supabase
+        const { error: updateBookingError } = await supabase
             .from('Booking')
             .update({
                 'transaction_amount': paymentAmount,
@@ -44,6 +44,28 @@ export async function MakePayment(booking_id:string, paymentMethod: string, paym
 
         redirect('/booking/successful/?booking_id=' + booking_id)
     }
+}
+
+export async function isBookingExpired(booking_id: string) {
+    const supabase = createClient()
+
+    const { data: bookingData, error: selectBookingError } = await supabase
+        .from('Booking')
+        .select('booking_created_at')
+        .eq('booking_id', booking_id)
+        .single()
+
+    if (selectBookingError || !bookingData) {
+        console.log("Select Booking failed at booking summary page")
+        console.error(selectBookingError)
+        return true
+    }
+
+    const lockTime = new Date(bookingData.booking_created_at)
+    const currentTime = new Date()
+    const timeDiff = currentTime.getTime() - lockTime.getTime()
+    const MAX_DIFF = 30 * 60 * 1000 // 30 minutes  
+    return timeDiff > MAX_DIFF
 }
 
 export default async function BookingSummaryPage({

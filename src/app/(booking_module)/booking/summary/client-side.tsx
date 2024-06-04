@@ -1,8 +1,8 @@
 'use client'
 
 import { Container, Heading, Flex, Image, Spacer, VStack, Text, Divider, Link, Center, Box, Button  } from "@chakra-ui/react"
-import { MakePayment, type BookingSummaryData } from "./page"
-import { useState } from "react"
+import { MakePayment, isBookingExpired, type BookingSummaryData } from "./page"
+import { useState, useEffect } from "react"
 
 export default function BookingSummary({ 
     booking_id, bookingSummaryData, facilityData
@@ -10,7 +10,14 @@ export default function BookingSummary({
     booking_id: string, bookingSummaryData: BookingSummaryData[], facilityData: {facility_name: string, facility_photo: string}
 }) {
     const [paymentMethod, setPaymentMethod] = useState("Online Banking")
+    const [ isExpired, setIsExpired ] = useState(true)
     let paymentAmount = 0
+
+    useEffect(() => {
+        isBookingExpired(booking_id).then((result) => {
+          setIsExpired(result);
+        });
+      }, [booking_id]);
 
     function HandlePaymentButton(booking_id:string, paymentMethod: string, paymentAmount: number) {
         MakePayment(booking_id, paymentMethod, paymentAmount)
@@ -52,21 +59,32 @@ export default function BookingSummary({
             </Flex>
             <Divider mb={5} borderColor="#970bf5" />
 
-            <Heading fontSize={"2xl"} mb={3}>Select Payment Method</Heading>
-            <Flex mb={5}>
-                <Box as="button" borderWidth={1} borderColor="black" p={5} rounded={10} _hover={{bg:"gray.50"}} _active={{bg:"gray.100"}} 
-                bg={paymentMethod ==  "Online Banking" ? "gray.100" : "white"} onClick={() => setPaymentMethod("Online Banking")}>
-                    <Image src="/online-booking-logo.png" alt="Online Banking" aspectRatio={3} maxW="200px" maxH="80px" borderWidth={1} borderColor="black"></Image>
-                </Box>  
-                <Spacer />
-                <Box as="button" borderWidth={1} borderColor="black" p={5} rounded={10} _hover={{bg:"gray.50"}} _active={{bg:"gray.100"}} 
-                bg={paymentMethod == "Credit Card" ? "gray.100" : "white"} onClick={() => setPaymentMethod("Credit Card")}>
-                    <Image src="/credit-card-logo.png" alt="Credit Card" aspectRatio={3} maxW="200px" maxH="80px" borderWidth={1} borderColor="black"></Image>
-                </Box>
-            </Flex>
+            {!isExpired ? (
+                <div>
+                    <Heading fontSize={"2xl"} mb={3}>Select Payment Method</Heading>
+                    <Flex mb={5}>
+                        <Box as="button" borderWidth={1} borderColor="black" p={5} rounded={10} _hover={{bg:"gray.50"}} _active={{bg:"gray.100"}} 
+                            bg={paymentMethod ==  "Online Banking" ? "gray.50" : "white"} onClick={() => setPaymentMethod("Online Banking")} 
+                        >
+                            <Image src="/online-booking-logo.png" alt="Online Banking" aspectRatio={3} maxW="200px" maxH="80px" borderWidth={1} borderColor="black"></Image>
+                        </Box>  
+                        <Spacer />
+                        <Box as="button" borderWidth={1} borderColor="black" p={5} rounded={10} _hover={{bg:"gray.50"}} _active={{bg:"gray.100"}} 
+                            bg={paymentMethod == "Credit Card" ? "gray.50" : "white"} onClick={() => setPaymentMethod("Credit Card")} 
+                        >
+                            <Image src="/credit-card-logo.png" alt="Credit Card" aspectRatio={3} maxW="200px" maxH="80px" borderWidth={1} borderColor="black"></Image>
+                        </Box>
+                    </Flex>
+                </div>
+                ) : null
+            }
 
             <Center>
-                <Button rounded={20} bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} onClick={() => HandlePaymentButton(booking_id, paymentMethod, paymentAmount)} >Proceed to Payment</Button>
+                {
+                    isExpired ? 
+                    (<Button rounded={20} isDisabled >Booking Expired</Button>) :
+                    (<Button rounded={20} bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} onClick={() => HandlePaymentButton(booking_id, paymentMethod, paymentAmount)} >Proceed to Payment</Button>)
+                }
             </Center>
         </Container>
     )

@@ -19,7 +19,7 @@ export default function BookingSuccess({
                 <Text mb={5}>Here is your receipt:</Text>
                 <VStack mb={5} spacing="0" alignSelf="start" alignItems="start">
                     <Text fontSize={"sm"} textAlign="left">Booking ID: {bookingData.booking_id}</Text>
-                    <Text fontSize={"sm"} textAlign="left">Paid on {date.toLocaleString()}</Text>
+                    <Text fontSize={"sm"} textAlign="left">Paid on {date.toLocaleDateString('en-MY')} {date.toLocaleTimeString('en-MY')}</Text>
                     <Text fontSize={"sm"} textAlign="left">Payment Method: {bookingData.transaction_method}</Text>
                     <Text fontSize={"sm"} textAlign="left">Name: {userData.full_name}</Text>
                     <Text fontSize={"sm"} textAlign="left">Phone Number: {userData.phone_num}</Text>

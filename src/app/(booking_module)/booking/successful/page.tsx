@@ -30,6 +30,11 @@ export default async function BookingSuccessPage({
         redirect('/')
     }
 
+    // Incomplete booking
+    if (!bookingData.transaction_time && !bookingData.transaction_amount && !bookingData.transaction_method) {
+        redirect('/booking/summary/?booking_id=' + booking_id)
+    }
+
     const { data: bookedTimeslot, error: selectTimeslotError } = await supabase
         .from('BookedTimeslot')
         .select('timeslot_date, timeslot_start, timeslot_end, timeslot_rate, fk_court_id, Court(court_name)')
