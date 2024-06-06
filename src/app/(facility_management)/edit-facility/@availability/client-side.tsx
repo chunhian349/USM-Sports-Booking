@@ -6,14 +6,40 @@ import { useState, useEffect } from 'react'
 import { useDisclosure } from '@chakra-ui/react'
 import { AddCourt, DeleteCourt } from './default'
 
-// Time in hh:mm (24 hour format)
-const timeSlots = Array.from({length: 16}, (v, i) => i + 8).map((v) => v + ":00").flat().slice(0, -1)
-//const timeSlots = ['8am', '9am', '10am', '11am', '12pm', '1pm', '2pm', '3pm', '4pm', '5pm', '6pm', '7pm', '8pm', '9pm', '10pm', '11pm']
+// Generate time slots, expect hh:mm format from facilityStartTime and facilityEndTime
+function GenerateTimeslots(facilityStartTime: string, facilityEndTime: string, timeslotInterval: number) {
+	// Year, month, day for both timeslot set to be same, focus only on time
+	const defaultYear = 2024;
+	const defaultMonthIndex = 0;
+	const defaultDay = 1;
+	const startTimeHour = parseInt(facilityStartTime.slice(0, 2))
+	const startTimeMinute = parseInt(facilityStartTime.slice(3, 5))
+	const endTimeHour = parseInt(facilityEndTime.slice(0, 2))
+	const endTimeMinute = parseInt(facilityEndTime.slice(3, 5))
+	// Use UTC Date to avoid timezone issue
+	const currentTimeslotStart = new Date(Date.UTC(defaultYear, defaultMonthIndex, defaultDay, startTimeHour, startTimeMinute))
+	const currentTimeslotEnd = new Date(Date.UTC(defaultYear, defaultMonthIndex, defaultDay, startTimeHour, startTimeMinute))
+	currentTimeslotEnd.setUTCMinutes(currentTimeslotEnd.getUTCMinutes() + timeslotInterval)
+	const facilityEnd = new Date(Date.UTC(defaultYear, defaultMonthIndex, defaultDay, endTimeHour, endTimeMinute))
 
-export default function FacilityAvailability({/*courtData, timeslotData, */facility_id}: {/*courtData: any[], timeslotData: any[][], */facility_id: string}) {	
-	//console.log("Component render")
-	//console.log(courtData)
+	const timeslots: string[] = []
 
+	// Include current timeslot while current timeslot end time is not over facility end time
+	// If hours over 24 will be converted to next day, the date comparison is still valid
+	while (currentTimeslotEnd <= facilityEnd) {
+		timeslots.push(currentTimeslotStart.toUTCString().slice(17, 22))
+
+		// Increment by timeslotInterval
+		currentTimeslotStart.setUTCMinutes(currentTimeslotStart.getUTCMinutes() + timeslotInterval)
+		currentTimeslotEnd.setUTCMinutes(currentTimeslotEnd.getUTCMinutes() + timeslotInterval)
+	}
+	
+	return timeslots
+}
+
+export default function FacilityAvailability({facility_id, facilityData}: {facility_id: string, facilityData: { facility_start_time: string, facility_end_time: string, timeslot_interval: number}}) {	
+	// Time in hh:mm (24 hour format)
+	const timeslots = GenerateTimeslots(facilityData.facility_start_time, facilityData.facility_end_time, facilityData.timeslot_interval) 
 	const [ courtDataState, setCourtDataState ] = useState([])
 	const [ fetchSignal, setFetchSignal ] = useState(false)
 
@@ -93,7 +119,7 @@ export default function FacilityAvailability({/*courtData, timeslotData, */facil
 				const timeslotData = await response.json()			
 				
 				// Reset timeSlotBooked to false
-				const localArrayCopy = Array.from({length: courtData.length}, () => new Array(timeSlots.length).fill(false))
+				const localArrayCopy = Array.from({length: courtData.length}, () => new Array(timeslots.length).fill(false))
 
 				// For each court
 				for (let i = 0; i < localArrayCopy.length; i++) {
@@ -125,15 +151,15 @@ export default function FacilityAvailability({/*courtData, timeslotData, */facil
 	{
 		return (
 			<Container>
-				<Heading>Facility details not found</Heading>
+				<Heading>(Facility details not found)</Heading>
 			</Container>
 		)
 	}
 
 	return (
 		<Container mt={5} maxW="100lvw" borderColor={"grey.300"} borderWidth={1} boxShadow={"lg"}>
-		<Container maxW="90lvw">
-			<Flex mb={1}>
+		<Container mt={5} maxW="90lvw">
+			<Flex mb={3}>
 				<Heading>Facility Availability</Heading>
 				<Spacer />
 				<Center>
@@ -155,8 +181,8 @@ export default function FacilityAvailability({/*courtData, timeslotData, */facil
 						<Tr>
 							<Th>Court</Th>
 							{
-								timeSlots.map((timeSlot, index) => {
-									return <Th key={index}>{timeSlot}</Th>
+								timeslots.map((timeslot, index) => {
+									return <Th key={index}>{timeslot}</Th>
 								})
 							}
 						</Tr>
@@ -192,7 +218,7 @@ export default function FacilityAvailability({/*courtData, timeslotData, */facil
 			<Center mb={4}>
 				<Button colorScheme="purple" rounded={20} mr={4} onClick={addCourtModal.onOpen}>Add Court</Button>
 				{/* <Button colorScheme="purple" rounded={20}>Change Status</Button> */}
-				<Modal isOpen={addCourtModal.isOpen} onClose={addCourtModal.onClose}>
+				<Modal isOpen={addCourtModal.isOpen} onClose={addCourtModal.onClose} isCentered>
 					<ModalOverlay />
 					<ModalContent>
 					<ModalHeader>Add Court</ModalHeader>
@@ -208,9 +234,11 @@ export default function FacilityAvailability({/*courtData, timeslotData, */facil
 								<Switch id="courtstatus" name="courtstatus" size="lg" colorScheme="purple" defaultChecked/>
 							</FormControl>
 							<Input type="hidden" name="facility_id" value={facility_id}></Input>
-							<Button onClick={handleAddCourt} colorScheme='purple'>
-								Submit
-							</Button>
+							<Center>
+								<Button onClick={handleAddCourt} rounded={20} colorScheme='purple'>
+									Submit
+								</Button>
+							</Center>
 						{/* </form> */}
 					</ModalBody>
 					<ModalFooter>

@@ -1,9 +1,8 @@
 'use server'
 
-import { redirect, usePathname } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import FacilityAvailability from './client-side'
 import { createClient } from '@/utils/supabase/server'
-import { revalidatePath } from 'next/cache'
 
 // Data from Court table
 export type CourtData = {
@@ -91,13 +90,13 @@ export default async function FacilityAvailabilityPage({
 
     const supabase = createClient()
     // Retrieve facility data 
-    let { data: facility_data, error } = await supabase
+    let { data: facilityData, error } = await supabase
         .from('SportsFacility')
-        .select('first_timeslot, last_timeslot, timeslot_interval, booking_rates')
+        .select('facility_start_time, facility_end_time, timeslot_interval, booking_rates')
         .eq('facility_id', facility_id)
         .single()
     
-    if (error || !facility_data) {
+    if (error || !facilityData) {
         console.log("FacilityAvailability select SportsFacility failed")
         console.error(error)
         redirect('/')
@@ -109,7 +108,7 @@ export default async function FacilityAvailabilityPage({
         return (
             <FacilityAvailability 
                 facility_id={facility_id}
-                facility_data={facility_data}
+                facilityData={facilityData}
                 user_type={'Private'}
             />
         )
@@ -134,7 +133,7 @@ export default async function FacilityAvailabilityPage({
     return (
         <FacilityAvailability 
             facility_id={facility_id}
-            facility_data={facility_data}
+            facilityData={facilityData}
             user_type={User.user_type}
         />
     )
