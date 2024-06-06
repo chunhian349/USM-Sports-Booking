@@ -3,7 +3,28 @@ import { createClient } from '@/utils/supabase/server'
 import EditFacility from './client-side'
 import { redirect } from 'next/navigation'
 
-const supabase = createClient()
+export type FacilityData = {
+    facility_id: string;
+    facility_photo: string;
+    facility_name: string;
+    facility_location: string;
+    sports_category: string;
+    phone_num: string;
+    facility_status: boolean;
+    facility_desc: string;
+    booking_rates: {
+        normal : {
+            student: number,
+            staff: number,
+            private: number
+        },
+        rush : {
+            student: number,
+            staff: number,
+            private: number
+        }
+    }
+}
 
 export async function UpdateFacilityImage(facility_id: string, user_id: string, formData: FormData): Promise<any> {
     //console.log("Facility ID: " + facility_id)
@@ -14,11 +35,16 @@ export async function UpdateFacilityImage(facility_id: string, user_id: string, 
     //console.log("Updated File Name: " + unpackedData.imageFile.name)
     
     // Insert into storage
+    const supabase = createClient()
     {
         const { error } = await supabase
         .storage
         .from('images')
         .upload('facility/' + user_id + "/" + unpackedData.imageFile.name, unpackedData.imageFile)
+    
+        if (error) {
+            console.error(error)
+        }
     }
     
     // Update facility_photo in SportsFacility
@@ -28,7 +54,10 @@ export async function UpdateFacilityImage(facility_id: string, user_id: string, 
         .from('SportsFacility')
         .update({ 'facility_photo': facility_photo })
         .eq('facility_id', facility_id)
-        .select() 
+
+        if (error) {
+            console.error(error)
+        }
     }
 
     redirect('/edit-facility/?facility_id=' + facility_id)
@@ -44,43 +73,80 @@ export async function UpdateFacilityDetails(facility_id: string, formData: FormD
         status: Boolean(formData.get('status')),
     }
 
-    // console.log("Facility Name: " + unpackedData.facilityName)
-    // console.log("Location: " + unpackedData.location)
-    // console.log("Sports Category: " + unpackedData.sportsCategory)
-    // console.log("Phone Number: " + unpackedData.phoneNumber)
+    //console.log(unpackedData)
     
-    const { data, error } = await supabase
-    .from('SportsFacility')
-    .update({
-        facility_name: unpackedData.facilityName,
-        facility_location: unpackedData.location,
-        sports_category: unpackedData.sportsCategory,
-        phone_num: unpackedData.phoneNumber,
-        facility_status: unpackedData.status,
-    })
-    .eq('facility_id', facility_id)
-    .select() 
+    {
+        const supabase = createClient()
+        const { data, error } = await supabase
+        .from('SportsFacility')
+        .update({
+            facility_name: unpackedData.facilityName,
+            facility_location: unpackedData.location,
+            sports_category: unpackedData.sportsCategory,
+            phone_num: unpackedData.phoneNumber,
+            facility_status: unpackedData.status,
+        })
+        .eq('facility_id', facility_id)
 
-    //console.error(error)
+        if (error) {
+            console.error(error)
+        }
+    }
 
     redirect('/edit-facility/?facility_id=' + facility_id)
 }
 
 export async function UpdateFacilityDesc(facility_id: string, formData: FormData): Promise<any> {
-
     const unpackedData = {
         description: formData.get('description') as string,
     }
     
-    const { data, error } = await supabase
-        .from('SportsFacility')
-        .update({ facility_desc: unpackedData.description })
-        .eq('facility_id', facility_id)
-        .select() 
-
-    console.error(error)
+    {
+        const supabase = createClient()
+        const { data, error } = await supabase
+            .from('SportsFacility')
+            .update({ facility_desc: unpackedData.description })
+            .eq('facility_id', facility_id)
+    
+        if (error) {
+            console.error(error)
+        }
+    }
 
     redirect('/edit-facility/?facility_id=' + facility_id)
+}
+
+export async function UpdateFacilityRates(facility_id: string, booking_rates: FacilityData['booking_rates']): Promise<any> {
+    // console.log(booking_rates)
+    
+    {
+        const supabase = createClient()
+        const { data, error } = await supabase
+            .from('SportsFacility')
+            .update({ 'booking_rates': booking_rates })
+            .eq('facility_id', facility_id)
+
+        if (error) {
+            console.error(error)
+        }
+    }
+
+    redirect('/edit-facility/?facility_id=' + facility_id)
+}
+
+export async function DeleteSportsFacility(facility_id: string): Promise<any> {
+    // console.log("Deleting the facility: " + facility_id)
+    const supabase = createClient()
+    const { data, error } = await supabase
+        .from('SportsFacility')
+        .delete()
+        .eq('facility_id', facility_id)
+
+    if (error) {
+        console.error(error)
+    }
+
+    redirect('/')
 }
 
 export default async function EditFacilityPage({
@@ -90,7 +156,7 @@ export default async function EditFacilityPage({
         facility_id: string
     }
 }) {
-    
+    const supabase = createClient()
     const { data : { user }} = await supabase.auth.getUser()
     if (!user) {
         redirect('/login')
@@ -99,16 +165,18 @@ export default async function EditFacilityPage({
     const facility_id = searchParams?.facility_id || ''
     //console.log("facility_id: " + facility_id)
 
-    let { data: result, error } = await supabase
+    let { data: facilityData, error: selectFacilityError } = await supabase
         .from('SportsFacility')
-        .select('*')
+        .select('facility_id, facility_photo, facility_name, facility_location, sports_category, phone_num, facility_status, facility_desc, booking_rates')
         .eq('facility_id', facility_id)
-        //.eq('fk_manager_id', user?.id)
+        .single()
 
-    if (error) {
-        console.error(error)
+    if (selectFacilityError || !facilityData) {
+        console.log("Facility not found at facility management page")
+        console.error(selectFacilityError)
+        redirect('/')
     }
 
-    //console.log("User id from page: " + user.id)
-    return <EditFacility facility={result?.at(0)} user_id={user.id}></EditFacility>
+    // console.log(facilityData)
+    return <EditFacility facilityData={facilityData as FacilityData} user_id={user.id}></EditFacility>
 }
