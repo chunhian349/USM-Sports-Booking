@@ -17,11 +17,30 @@ export async function InsertImage(imageFile: File, user_id: string){
   }
 }
 
-export async function SubmitFacilityForm(formData: FormData): Promise<any> {
+export async function SubmitFacilityForm(formData: FormData) : Promise<any> {
   const { data : { user }} = await supabase.auth.getUser()
   if (!user) {
     return { message: "User not found" }
   }
+
+  // Convert booking rates into obj
+  const bookingRatesObj = { 
+    normal: {
+      student: Number(formData.get('normStudentRate')) ?? 0,
+      staff: Number(formData.get('normStaffRate')) ?? 0,
+      private: Number(formData.get('normPrivateRate')) ?? 0,
+    }, 
+    rush: {
+      student: Number(formData.get('rushStudentRate')) ?? 0,
+      staff: Number(formData.get('rushStaffRate')) ?? 0,
+      private: Number(formData.get('rushPrivateRate')) ?? 0,
+    }
+  }
+  // console.log(bookingRatesObj)
+
+  // Convert intervals into minutes
+  const timeslotInterval = (Number(formData.get('intervalHour')) ?? 0) * 60 + (Number(formData.get('intervalMin')) ?? 0)
+  // console.log(timeslotInterval)
 
   // type-casting here for convenience
   // in practice, you should validate your inputs
@@ -31,8 +50,8 @@ export async function SubmitFacilityForm(formData: FormData): Promise<any> {
     location: formData.get('location') as string,
     phoneNumber: formData.get('phone') as string,
     sportsCategory: formData.get('sports') as string,
-    operatingHours: formData.get('hours') as string,
-    //bookingRate: formData.get('rate') as string,
+    startTime: formData.get('startTime') as string,
+    endTime: formData.get('endTime') as string,
     description: formData.get('description') as string,
     status: Boolean(formData.get('status')),
   }
@@ -42,10 +61,12 @@ export async function SubmitFacilityForm(formData: FormData): Promise<any> {
   // console.log("Location: " + data.location)
   // console.log("Phone Number: " + data.phoneNumber)
   // console.log("Sports Category: " + data.sportsCategory)
-  // console.log("Operating Hours: " + data.operatingHours)
+  // console.log("Start Time: " + data.startTime)
+  // console.log("End Time: " + data.endTime)
   // console.log("Booking Rate: " + data.bookingRate)
   // console.log("Description: " + data.description)
   // console.log("Status: " + data.status)
+  // console.log(data)
 
   InsertImage(data.imageFile, user.id)
 
@@ -54,23 +75,26 @@ export async function SubmitFacilityForm(formData: FormData): Promise<any> {
   .from('SportsFacility')
   .insert([
     { 
+      facility_photo: facility_photo,
       facility_name: data.facilityName,
-      facility_desc: data.description,
       facility_location: data.location,
-      facility_status: data.status,
       phone_num: data.phoneNumber,
       sports_category: data.sportsCategory,
-      operating_hours: JSON.stringify(data.operatingHours),
-      facility_photo: facility_photo,
+      facility_start_time: data.startTime,
+      facility_end_time: data.endTime,
+      timeslot_interval: timeslotInterval,
+      booking_rates: bookingRatesObj,
+      facility_desc: data.description,
+      facility_status: data.status,
       fk_manager_id: user.id,
     }
   ])
-  .select()
+  .select('facility_id')
   .single()
 
-  if (error) {
+  if (error || !insertData) {
     return error
   }
 
-  redirect('/edit-facility/?facility_id=' + insertData?.facility_id)
+  redirect('/edit-facility/?facility_id=' + insertData.facility_id)
 }
