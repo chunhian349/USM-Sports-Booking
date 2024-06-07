@@ -24,8 +24,12 @@ export type Timeslot = {
 }
 
 
-export async function MakeBooking(selectedTimeslot: Timeslot[]) {
+export async function MakeBooking(facility_id: string, selectedTimeslot: Timeslot[]) {
     const supabase = createClient()
+
+    if (selectedTimeslot.length === 0) {
+        return "selectedTimeslot_null"
+    }
 
     const { data : { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -38,6 +42,7 @@ export async function MakeBooking(selectedTimeslot: Timeslot[]) {
         .from('Booking')
         .insert({
             fk_user_id: user.id,
+            fk_facility_id: facility_id
         })
         .select()
         .single()
@@ -51,7 +56,7 @@ export async function MakeBooking(selectedTimeslot: Timeslot[]) {
         return "booking_null"
     }
 
-    const { data: bookedTimeslot, error: error_bookedTimeslot} = await supabase
+    const { error: error_bookedTimeslot } = await supabase
         .from('BookedTimeslot')
         .insert(selectedTimeslot.map(timeslot => ({
             timeslot_date: timeslot.timeslot_date,

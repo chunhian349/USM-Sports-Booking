@@ -85,10 +85,8 @@ export default async function BookingSummaryPage({
         .from('BookedTimeslot')
         .select('timeslot_date, timeslot_start, timeslot_end, timeslot_rate, fk_court_id, Court(court_name)')
         .eq('fk_booking_id', booking_id)    
-        
-    // console.log(bookedTimeslot)
 
-    if (selectTimeslotError || !bookedTimeslot) {
+    if (selectTimeslotError || bookedTimeslot.length == 0) {
         console.log("Select BookedTimeslot failed at booking summary page")
         console.error(selectTimeslotError)
         redirect('/')
@@ -99,6 +97,7 @@ export default async function BookingSummaryPage({
         .select('SportsFacility(facility_name, facility_photo)')
         .eq('court_id', bookedTimeslot[0].fk_court_id)
         .single()
+        // .returns<{SportsFacility: {facility_name: string, facility_photo: string}}[]>()
 
     if (selectFacilityError || !facilityData) {
         console.log("Select Court failed at booking summary page")

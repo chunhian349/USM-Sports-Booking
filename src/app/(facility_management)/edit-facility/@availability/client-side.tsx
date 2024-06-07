@@ -6,6 +6,13 @@ import { useState, useEffect } from 'react'
 import { useDisclosure } from '@chakra-ui/react'
 import { AddCourt, DeleteCourt } from './default'
 
+function GetDateInUTC8(date: Date) {
+	const UTC8_OFFSET = 8
+	date.setUTCHours(date.getUTCHours() + UTC8_OFFSET)
+	//console.log(date)
+	return date
+}
+
 // Generate time slots, expect hh:mm format from facilityStartTime and facilityEndTime
 function GenerateTimeslots(facilityStartTime: string, facilityEndTime: string, timeslotInterval: number) {
 	// Year, month, day for both timeslot set to be same, focus only on time
@@ -72,8 +79,9 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 
 	// 2d array of court availability, initialized to false, then set to true if timeslot is booked
 	const [ timeSlotBooked, setTimeSlotBooked ] = useState<boolean[][]>([])
-
-	const [ date, setDate ] = useState(new Date().toISOString().slice(0, 10))
+	
+	const todayDate = GetDateInUTC8(new Date())
+	const [ date, setDate ] = useState(todayDate.toISOString().slice(0, 10))
 	//console.log(timeSlotBooked)
 	
 	const addCourtModal = useDisclosure()

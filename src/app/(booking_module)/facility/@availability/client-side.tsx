@@ -233,11 +233,15 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 		//console.log(selectedTimeslot)
 	}
 
-	async function handleMakeBooking(selectedTimeslot: Timeslot[]) {
-		const makeBookingResult : string = await MakeBooking(selectedTimeslot)
+	async function handleMakeBooking(facility_id: string, selectedTimeslot: Timeslot[]) {
+		const makeBookingResult : string = await MakeBooking(facility_id, selectedTimeslot)
 
 		// Redirect to other page if negative result
 		switch (makeBookingResult) {
+			case "selectedTimeslot_null":
+				alert("Please select at least one timeslot to make booking")
+				break
+
 			case "user_null":
 				alert("Please login to make booking")
 				router.push('/login')
@@ -335,7 +339,7 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 			</TableContainer>
 
 			<Center mb={5}>
-				<Button bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} rounded={20} mr={4} onClick={() => {handleMakeBooking(selectedTimeslot)}}>Make Booking<Link></Link></Button>
+				<Button bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} rounded={20} mr={4} onClick={() => {handleMakeBooking(facility_id, selectedTimeslot)}} isDisabled={selectedTimeslot.length == 0}>Make Booking<Link></Link></Button>
 			</Center>
 		</Container>
 		</Container>
