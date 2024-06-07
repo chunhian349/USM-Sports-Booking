@@ -1,6 +1,5 @@
 'use client'
 
-import { type User } from '@supabase/supabase-js'
 import { Heading, Container, Image, Box, Text, Center, Flex, Spacer, Link, VStack, Tag, TagLabel } from "@chakra-ui/react"
 
 // Custom component that displays an image with text and a button
@@ -11,7 +10,7 @@ const ImageWithTextAndButton = ({ imageUrl, heading, text}: { imageUrl: string, 
             src={imageUrl}
             alt="Homepage Image"
             objectFit="cover"
-            zIndex="-1" // Place image behind content
+            zIndex="-1"
             w="100%" 
             h="130%"
             // position="absolute"
@@ -20,10 +19,10 @@ const ImageWithTextAndButton = ({ imageUrl, heading, text}: { imageUrl: string, 
              transform="translate(0, -20%)"
             aspectRatio={16 / 9}
         />
-        <Box position="absolute" top="0" left="0" w="full" h="full" bg="rgba(0, 0, 0, 0.5)" zIndex="1">  
-          {/* Semi-transparent overlay */}
+        <Box position="absolute" top="0" left="0" w="full" h="full" bg="rgba(0, 0, 0, 0.5)" zIndex="0">  
+          {/* Semi-transparent overlay, adjust z to cover the image but avoid to cover the menu in nav */}
         </Box>
-        <Box position="absolute" top="50%" left="50%" w="80%" transform="translate(-50%, -50%)" zIndex="2">
+        <Box position="absolute" top="50%" left="50%" w="80%" transform="translate(-50%, -50%)">
             <Center>
             <Heading size="2xl" color="White" mb={8}>
                 {heading}
@@ -39,7 +38,19 @@ const ImageWithTextAndButton = ({ imageUrl, heading, text}: { imageUrl: string, 
     )
 }
 
-export default function UserClient(/*{ user }: { user: User }, */{ facilities }: { facilities: any[] }) {
+export default function UserClient({ 
+    facilities 
+}: { 
+    facilities: {
+        facility_id: string;
+        facility_photo: string;
+        facility_name: string;
+        facility_location: string;
+        sports_category: string;
+        facility_status: boolean;
+        overall_rating: number;
+    }[]
+}) {
     //console.log(facilities)
     return (
         <Container maxW="90lvw" mt={5}>
@@ -66,7 +77,7 @@ export default function UserClient(/*{ user }: { user: User }, */{ facilities }:
                             <Text textColor={(facility.facility_status? "green": "red")}>{(facility.facility_status? "Active": "Inactive")}</Text>
                         </Flex>
                         <Spacer />
-                        <Text>Rating<Tag placeContent='center' ml={1} bgColor='#970bf5' borderRadius="full" textColor="white" w="4rem"><TagLabel>{facility.overall_rating == null? "n/a" : facility.overall_rating}</TagLabel></Tag></Text>
+                        <Text>Rating<Tag placeContent='center' ml={1} bgColor={facility.overall_rating >= 7 ? 'green' : facility.overall_rating >= 3.5 ? 'orange' : 'red'} borderRadius="full" textColor="white" w="4rem"><TagLabel>{facility.overall_rating.toFixed(1)}</TagLabel></Tag></Text>
                     </Flex>
                     </Link>
                 ))}
