@@ -81,12 +81,12 @@ export default function AccountForm({ user }: { user: User}) {
           <Input id="user_type" name="user_type" type="user_type" value={usertype} disabled/>
         </FormControl>
         <FormControl isRequired mb={5}>
-          <FormLabel htmlFor="user_type">Full Name:</FormLabel>
-          <Input id="user_type" name="user_type" type="user_type" value={fullname} onChange={(e) => {setFullname(e.target.value)}} />
+          <FormLabel>Full Name:</FormLabel>
+          <Input value={fullname} onChange={(e) => {setFullname(e.target.value)}} />
         </FormControl>
         <FormControl isRequired mb={5}>
-          <FormLabel htmlFor="user_type">Phone Number:</FormLabel>
-          <Input id="user_type" name="user_type" type="user_type" value={phonenum} onChange={(e) => {setPhonenum(e.target.value)}}/>
+          <FormLabel>Phone Number:</FormLabel>
+          <Input value={phonenum} onChange={(e) => {setPhonenum(e.target.value)}}/>
         </FormControl>
         <Flex>
           <Spacer></Spacer>

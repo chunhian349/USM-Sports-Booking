@@ -1,19 +1,22 @@
+'use server'
 import { createClient } from "@/utils/supabase/server";
 import UserHomepage from "./homepage/user/page";
 import ManagerHomepage from "./homepage/manager/page";
+import AdminHomePage from "./homepage/admin/page";
 import { redirect } from "next/navigation";
 
 export default async function AppPage() {
   const supabase = createClient();
   const { data : { user } } = await supabase.auth.getUser()
   if (!user) {
-    return <UserHomepage user_id={null} />
+    return <UserHomepage />
   }
 
   const { data: User, error } = await supabase
     .from('User')
     .select('user_type')
     .eq('user_id', user.id)
+    .returns<{ user_type: string }[]>()
     .single()
 
   if (!User) {
@@ -23,11 +26,15 @@ export default async function AppPage() {
     redirect('/auth/signout')
   }
 
-  return (
-    (User.user_type == 'Facility Manager') ? (
-      <ManagerHomepage user_id={user.id} />
-    ) : (
-      <UserHomepage user_id={user.id} />
-    )
-  );
+  const user_type = User.user_type.toLowerCase()
+  if (user_type == 'facility manager') {
+    return <ManagerHomepage user_id={user.id} />
+  }
+  else if (user_type == 'admin') {
+    return <AdminHomePage />
+  }
+  else {
+    return <UserHomepage />
+  }
+
 }

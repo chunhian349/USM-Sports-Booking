@@ -54,7 +54,7 @@ export default function BookingHistory({completedBooking, incompleteBooking, boo
         // )
     return (
         <Container maxW="90lvw" mt={5} borderColor='gray.300' px={5} borderWidth={2} rounded={10}>
-            <Heading mt={3} mb={5}>Booking History</Heading>
+            <Heading my={5}>Booking History</Heading>
             
             <Link href='/'>
                 <ArrowBackIcon /> Back to homepage
