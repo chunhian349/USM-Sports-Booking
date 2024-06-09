@@ -1,7 +1,7 @@
 'use client'
 
 import { Container, Heading, Flex, Image, Spacer, VStack, Text, Divider, Center, Box, Button, useToast  } from "@chakra-ui/react"
-import { MakePayment, isBookingExpired, type BookingSummaryData } from "./page"
+import { MakePayment, isBookingExpired, type BookingSummaryData } from "./actions"
 import { useState, useEffect } from "react"
 
 export default function BookingSummary({ 
