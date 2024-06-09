@@ -2,7 +2,7 @@
 
 import { FormControl, FormLabel, Input, Container, Button, Heading, Center, VStack, Alert, AlertIcon, Text } from '@chakra-ui/react'
 import { useFormStatus, useFormState } from 'react-dom'
-import { UpdateProfile } from './page'
+import { UpdateProfile } from './actions'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 const initialState = { isActionSuccess: false, message: ''}

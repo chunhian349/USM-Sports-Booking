@@ -2,7 +2,7 @@
 
 import { Container, Flex, Heading, Box, Button, Spacer, Image, Center, Text, Tabs, Tab, TabList, TabPanels, TabPanel, Table, Thead, Tr, Th, Tbody, TableContainer, Td, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, VStack, Textarea, FormLabel, Divider, FormControl, Input, InputGroup, InputRightElement, useToast } from "@chakra-ui/react";
 import { useState } from "react";
-import { UpdateReport, AddFacilityManager } from "./page";
+import { UpdateReport, AddFacilityManager } from "./actions";
 import { useRouter } from 'next/navigation';
 
 export default function AdminClient({

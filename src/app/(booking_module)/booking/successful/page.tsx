@@ -1,5 +1,5 @@
 'use server'
-import { BookingSummaryData } from "../summary/page"
+import { BookingSummaryData } from "../summary/actions"
 import BookingSuccess from "./client-side"
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'

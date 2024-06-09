@@ -4,7 +4,7 @@ import { ArrowBackIcon } from "@chakra-ui/icons"
 import { Container, Heading, Link, VStack, Text, Flex, Button, Image, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, FormControl, FormLabel, Input, Center, Spacer, Textarea, Tabs, Tab, TabList, TabPanels, TabPanel, Alert, AlertIcon } from "@chakra-ui/react"
 import { useDisclosure } from "@chakra-ui/react"
 import { useFormStatus, useFormState } from "react-dom"
-import { SubmitReport } from "./page"
+import { SubmitReport } from "./actions"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 

@@ -1,5 +1,5 @@
 'use client'
-import { type BookingSummaryData } from "../summary/page"
+import { type BookingSummaryData } from "../summary/actions"
 import { Container, Heading, Flex, Image, Spacer, VStack, Text, Divider, Center, Button, Link } from "@chakra-ui/react"
 
 export default function BookingSuccess({

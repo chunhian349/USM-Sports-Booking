@@ -2,7 +2,7 @@
 
 import { Container, Heading, Flex, Box, Spacer, Text, Input, Center, TableContainer, Table, Thead, Tr, Th, Button, Tbody, useToast } from "@chakra-ui/react"
 import { useState, useEffect } from 'react'
-import { MakeBooking, type CourtData, Timeslot } from "./default"
+import { MakeBooking, type CourtData, Timeslot } from "./actions"
 import { useRouter } from 'next/navigation'
 
 // Change time zone to UTC+8
@@ -140,7 +140,7 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 				}) 			
 		}
 		fetchData()
-	}, [fetchSignal])
+	}, [fetchSignal, facility_id, router])
 
 	// 2d array of court availability, initialized to false, then set to true if timeslot is booked
 	const [ timeSlotBooked, setTimeSlotBooked ] = useState<boolean[][]>([])
@@ -154,64 +154,63 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 	const [ isLoading, setIsLoading ] = useState(false)
 	const toast = useToast()
 	
-	// courtData should be the latest update before fetching timeslot data
-	async function fetchTimeslotData (courtData: CourtData[], date: string) {
-		const response = await fetch(`/api/timeslot`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({courtData, date})
-			})
-			.then((response) => response.json())
-			.then((timeslotData) => {
-				// Reset timeSlotBooked to false
-				const localArrayCopy = Array.from({length: courtData.length}, () => new Array(timeslots.length).fill(false))
-
-				// For each court
-				for (let i = 0; i < localArrayCopy.length; i++) {
-					// Set timeSlotBooked to true if timeslot is booked (check by timeslot_index)
-					for (let j = 0; j < (timeslotData != undefined ? timeslotData[i].length : 0); j++) {
-						//console.log(i + " " + j + ": " + timeslotData[i][j].timeslot_index)
-						localArrayCopy[i][timeslotData[i][j].timeslot_index] = true
-					}	
-				}
-				
-				// Check if timeslot is already passed, if yes, set to true (make the timeslot unavailable)
-				const currentTime = (new Date()).toTimeString().slice(0, 5)
-				if (date == todayDate.toISOString().slice(0, 10))
+	useEffect(() => {
+		//console.log("Use effect called")
+		// courtData should be the latest update before fetching timeslot data
+		async function fetchTimeslotData (courtData: CourtData[], date: string) {
+			const response = await fetch(`/api/timeslot`,
 				{
-					for (let i = 0; i < timeslots.length; i++)
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({courtData, date})
+				})
+				.then((response) => response.json())
+				.then((timeslotData) => {
+					// Reset timeSlotBooked to false
+					const localArrayCopy = Array.from({length: courtData.length}, () => new Array(timeslots.length).fill(false))
+
+					// For each court
+					for (let i = 0; i < localArrayCopy.length; i++) {
+						// Set timeSlotBooked to true if timeslot is booked (check by timeslot_index)
+						for (let j = 0; j < (timeslotData != undefined ? timeslotData[i].length : 0); j++) {
+							//console.log(i + " " + j + ": " + timeslotData[i][j].timeslot_index)
+							localArrayCopy[i][timeslotData[i][j].timeslot_index] = true
+						}	
+					}
+					
+					// Check if timeslot is already passed, if yes, set to true (make the timeslot unavailable)
+					const currentTime = (new Date()).toTimeString().slice(0, 5)
+					if (date == todayDate.toISOString().slice(0, 10))
 					{
-						if (timeslots[i] < currentTime)
+						for (let i = 0; i < timeslots.length; i++)
 						{
-							// Apply to all courts
-							for (let j = 0; j < localArrayCopy.length; j++)
+							if (timeslots[i] < currentTime)
 							{
-								localArrayCopy[j][i] = true
+								// Apply to all courts
+								for (let j = 0; j < localArrayCopy.length; j++)
+								{
+									localArrayCopy[j][i] = true
+								}
 							}
 						}
 					}
-				}
-				
-				setTimeSlotBooked(localArrayCopy)
-				//console.log(timeSlotBooked)
-			})
-			.catch((error) => {
-				const errorMessage = "Fetch timeslot data failed (in facility/availability)"
-				router.push('/error/?error=' + errorMessage)
-			})
-	}
-
-	useEffect(() => {
-		//console.log("Use effect called")
+					
+					setTimeSlotBooked(localArrayCopy)
+					//console.log(timeSlotBooked)
+				})
+				.catch((error) => {
+					const errorMessage = "Fetch timeslot data failed (in facility/availability)"
+					router.push('/error/?error=' + errorMessage)
+				})
+		}
 
 		async function fetchData() {
 			await fetchTimeslotData(courtData, date)
 		}
 		fetchData()
-	}, [courtData, date])	
+	}, [courtData, date, router, timeslots, todayDate])	
 	
 	function handleTimeslotClicked(row: number, column: number) {
 		let newSelectedTimeslot = [...selectedTimeslot]

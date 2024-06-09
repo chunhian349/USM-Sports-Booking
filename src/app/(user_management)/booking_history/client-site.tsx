@@ -3,7 +3,7 @@
 import { useToast, Container, Center, Heading, VStack, Link, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, Flex, Box, FormControl, FormLabel, Input, Image, Spacer, Divider, Slider, SliderMark, SliderTrack, SliderFilledTrack, SliderThumb, Tooltip, Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
 import { ArrowBackIcon } from "@chakra-ui/icons"
 import { useState, useEffect } from "react"
-import { SubmitReview, SelectReview, type BookingDetails } from "./page"
+import { SubmitReview, SelectReview, type BookingDetails } from "./actions"
 
 export default function BookingHistory({
     completedBooking, incompleteBooking, bookingDetails

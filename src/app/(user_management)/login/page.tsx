@@ -1,6 +1,6 @@
 'use client'
 
-import { FormControl, FormLabel, Input, Container, Button, Heading, Link, Center, Text, InputGroup, InputRightElement, VStack } from '@chakra-ui/react'
+import { FormControl, FormLabel, Input, Container, Button, Heading, Link, Center, Text, InputGroup, InputRightElement, VStack, Alert, AlertIcon } from '@chakra-ui/react'
 import { login } from './actions'
 import { useState } from 'react'
 import { useFormStatus, useFormState } from 'react-dom'
@@ -35,9 +35,20 @@ export default function LoginPage() {
             </InputRightElement>
           </InputGroup>
         </FormControl>
-        <VStack mb={5} w={["90%", "20rem", "22rem"]}>
+        <VStack mb={5} w={["90%", "20rem", "20rem"]}>
           <Text mr={1}>{'Forgot Password? '}<Link href='/reset_request' color='blue'>Reset Password</Link></Text>
-          <Text color='red'>{loginState.message}</Text> 
+          {/* formState changed after submit, show result of form submission (success/failed) */}
+          {(loginState == initialState) ? null : loginState.isActionSuccess ? (
+            <Alert status='success'>
+              <AlertIcon />
+              <Text color='green' fontSize='sm'>{loginState.message}</Text>
+            </Alert>
+          ) : (
+            <Alert status='error'>
+              <AlertIcon />
+              <Text color='red' fontSize='sm'>{loginState.message}</Text>
+            </Alert>
+          )}
         </VStack>
 
         <Center>

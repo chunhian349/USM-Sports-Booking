@@ -5,7 +5,7 @@ import { CloseIcon } from "@chakra-ui/icons"
 import { useState, useEffect } from 'react'
 import { useRouter } from "next/navigation"
 import { useDisclosure } from '@chakra-ui/react'
-import { AddCourt, DeleteCourt } from './default'
+import { AddCourt, DeleteCourt } from './actions'
 
 function GetDateInUTC8(date: Date) {
 	const UTC8_OFFSET = 8
@@ -76,7 +76,7 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 			}
 		}
 		fetchData()
-	}, [fetchSignal])
+	}, [fetchSignal, facility_id, router])
 
 	// 2d array of court availability, initialized to false, then set to true if timeslot is booked
 	const [ timeSlotBooked, setTimeSlotBooked ] = useState<boolean[][]>([])
@@ -110,49 +110,48 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 		setFetchSignal(!fetchSignal)
 	}
 	
-	async function fetchTimeslotData (courtData: any[], date: string) {
-		try{
-			const response = await fetch(`/api/timeslot`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({courtData, date})
-			})
-			
-			if (response) {
-				const timeslotData = await response.json()			
-				
-				// Reset timeSlotBooked to false
-				const localArrayCopy = Array.from({length: courtData.length}, () => new Array(timeslots.length).fill(false))
-
-				// For each court
-				for (let i = 0; i < localArrayCopy.length; i++) {
-					// Set timeSlotBooked to true if timeslot is booked
-					for (let j = 0; j < (timeslotData != undefined ? timeslotData[i].length : 0); j++) {
-						//console.log(i + " " + j + ": " + timeslotData[i][j].timeslot_index)
-						localArrayCopy[i][timeslotData[i][j].timeslot_index] = true
-					}
-				}
-				
-				setTimeSlotBooked(localArrayCopy)
-				//console.log(timeSlotBooked)
-			}
-		} catch (error) {
-			const errorMessage = "Fetch timeslot data failed (in edit-facility/availability)"
-			router.push('/error/?error=' + errorMessage)
-		}
-	}
-
 	useEffect(() => {
 		//console.log("Use effect called")
+		async function fetchTimeslotData (courtData: any[], date: string) {
+			try{
+				const response = await fetch(`/api/timeslot`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({courtData, date})
+				})
+				
+				if (response) {
+					const timeslotData = await response.json()			
+					
+					// Reset timeSlotBooked to false
+					const localArrayCopy = Array.from({length: courtData.length}, () => new Array(timeslots.length).fill(false))
+	
+					// For each court
+					for (let i = 0; i < localArrayCopy.length; i++) {
+						// Set timeSlotBooked to true if timeslot is booked
+						for (let j = 0; j < (timeslotData != undefined ? timeslotData[i].length : 0); j++) {
+							//console.log(i + " " + j + ": " + timeslotData[i][j].timeslot_index)
+							localArrayCopy[i][timeslotData[i][j].timeslot_index] = true
+						}
+					}
+					
+					setTimeSlotBooked(localArrayCopy)
+					//console.log(timeSlotBooked)
+				}
+			} catch (error) {
+				const errorMessage = "Fetch timeslot data failed (in edit-facility/availability)"
+				router.push('/error/?error=' + errorMessage)
+			}
+		}
 
 		async function fetchData() {
 			await fetchTimeslotData(courtDataState, date)
 		}
 		fetchData()
-	}, [courtDataState, date])	
+	}, [courtDataState, date, router, timeslots.length])	
 
 	return (
 		<Container mt={5} maxW="100lvw" borderColor={"gray.300"} borderWidth={1} boxShadow={"lg"}>
@@ -246,17 +245,6 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 				</Modal>
 			</Center>
 		</Container>
-		</Container>
-	)
-}
-
-export function FacilityNotFound() {
-	return (
-		<Container mt={5} maxW="100lvw" borderColor={"gray.300"} borderWidth={1} boxShadow={"lg"}>
-			<Container mt={5} maxW="90lvw">
-				<Heading>Facility Availability</Heading>
-				<Text h="10lvh" fontStyle='italic' fontSize='lg' textColor='gray'>(Facility not found, unable to show availability)</Text>
-			</Container>
 		</Container>
 	)
 }

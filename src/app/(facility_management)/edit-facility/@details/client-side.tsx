@@ -3,7 +3,7 @@
 import { Container, Heading, Box, Text, Image, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Divider, Input, Link, AspectRatio, FormLabel, FormControl, Icon, Switch, Center, TableContainer, Table, Thead, Tr, Th, Td, Tbody, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Checkbox } from "@chakra-ui/react"
 import { EditIcon, InfoIcon, PhoneIcon } from "@chakra-ui/icons"
 import { useState } from 'react'
-import { UpdateFacilityImage, UpdateFacilityDetails, UpdateFacilityDesc, UpdateFacilityRates, DeleteSportsFacility, type FacilityData } from './default'
+import { UpdateFacilityImage, UpdateFacilityDetails, UpdateFacilityDesc, UpdateFacilityRates, DeleteSportsFacility, type FacilityData } from './actions'
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdCategory } from "react-icons/md";
 

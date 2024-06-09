@@ -2,7 +2,6 @@
 import { createClient } from '@/utils/supabase/server'
 import FacilityDetails from './client-side'
 import { redirect } from 'next/navigation'
-import { type FacilityData } from '@/app/(facility_management)/edit-facility/@details/default'
 
 export default async function FacilityDetailsPage({
     searchParams,
