@@ -29,7 +29,7 @@ export default function FacilityReviews({
                 {
                     reviewData.map((review, index) => {
                         return (
-                            <Box key={index} borderColor={"grey"} borderWidth={1} boxShadow={"lg"} p={3} w="100%" rounded="10">
+                            <Box key={index} borderColor={"gray"} borderWidth={1} boxShadow={"lg"} p={3} w="100%" rounded="10">
                                 <Text fontWeight='bold'>Rating: {review.review_rating}</Text>
                                 {
                                     review.review_comment ? 

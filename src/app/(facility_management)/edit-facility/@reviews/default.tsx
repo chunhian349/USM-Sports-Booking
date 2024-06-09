@@ -17,7 +17,6 @@ export default async function FacilityReviewsPage({
         .returns<{ review_id: string, review_rating: number, review_comment: string, review_created_at: string }[]>()
 
     if (selectReviewError || !reviewData) {
-        console.error(selectReviewError)
         return <FacilityReviews reviewData={[]} overall_rating={0}></FacilityReviews>
     }
 
@@ -28,9 +27,9 @@ export default async function FacilityReviewsPage({
         .returns<{ overall_rating: number }[]>()
         .single()
 
-    if (selectFacilityError) {
-        console.error(selectFacilityError)
-    }
+    // if (selectFacilityError) {
+    //     console.error(selectFacilityError)
+    // }
 
     return (
         <FacilityReviews reviewData={reviewData} overall_rating={Number(facilityData?.overall_rating) ?? 0}/>

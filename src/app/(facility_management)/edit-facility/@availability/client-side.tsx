@@ -1,15 +1,15 @@
 'use client'
 
-import { Container, Heading, Flex, Box, Spacer, Text, Input, Center, TableContainer, Table, TableCaption, Thead, Tr, Th, Button, Tbody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, FormControl, FormLabel, Switch, Link } from "@chakra-ui/react"
+import { Container, Heading, Flex, Box, Spacer, Text, Input, Center, TableContainer, Table, Thead, Tr, Th, Button, Tbody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, FormControl, FormLabel, Switch, Link } from "@chakra-ui/react"
 import { CloseIcon } from "@chakra-ui/icons"
 import { useState, useEffect } from 'react'
+import { useRouter } from "next/navigation"
 import { useDisclosure } from '@chakra-ui/react'
 import { AddCourt, DeleteCourt } from './default'
 
 function GetDateInUTC8(date: Date) {
 	const UTC8_OFFSET = 8
 	date.setUTCHours(date.getUTCHours() + UTC8_OFFSET)
-	//console.log(date)
 	return date
 }
 
@@ -49,6 +49,7 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 	const timeslots = GenerateTimeslots(facilityData.facility_start_time, facilityData.facility_end_time, facilityData.timeslot_interval) 
 	const [ courtDataState, setCourtDataState ] = useState([])
 	const [ fetchSignal, setFetchSignal ] = useState(false)
+	const router = useRouter()
 
 	// Fetch court data
 	useEffect(() => {
@@ -85,7 +86,6 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 	//console.log(timeSlotBooked)
 	
 	const addCourtModal = useDisclosure()
-	//const addCourtWithId = AddCourt.bind(null, facility_id)
 
 	const handleAddCourt = async () => {
 		const court_name = document.getElementById("courtname") as HTMLInputElement
@@ -96,13 +96,11 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 		} catch (error) {
 			console.error(error)
 		}
-		//console.log("Add court")
 
 		setFetchSignal(!fetchSignal)
 	}
 
 	const handleDelCourt = async (court_id : string) => {
-		//console.log("Delete court")
 		try {
 			await DeleteCourt(court_id)
 		} catch (error) {
@@ -142,7 +140,8 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 				//console.log(timeSlotBooked)
 			}
 		} catch (error) {
-			console.error(error)
+			const errorMessage = "Fetch timeslot data failed (in edit-facility/availability)"
+			router.push('/error/?error=' + errorMessage)
 		}
 	}
 
@@ -154,18 +153,9 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 		}
 		fetchData()
 	}, [courtDataState, date])	
-		
-	if (!facility_id || facility_id === 'undefined')
-	{
-		return (
-			<Container>
-				<Heading>(Facility details not found)</Heading>
-			</Container>
-		)
-	}
 
 	return (
-		<Container mt={5} maxW="100lvw" borderColor={"grey.300"} borderWidth={1} boxShadow={"lg"}>
+		<Container mt={5} maxW="100lvw" borderColor={"gray.300"} borderWidth={1} boxShadow={"lg"}>
 		<Container mt={5} maxW="90lvw">
 			<Flex mb={3}>
 				<Heading>Facility Availability</Heading>
@@ -210,11 +200,10 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 										{
 											timeSlotBooked[index] ? (
 												timeSlotBooked[index].map((isBooked: boolean, index2: number) => {
-													return <Th key={index2} bg={isBooked ? "red" : "lightgreen"} _active={{bg:"blue"}}><Link></Link></Th>
+													return <Th key={index2} bg={isBooked ? "red" : "lightgreen"}><Link></Link></Th>
 												})
 											): null																																			
 										}
-										{/* <Th bg={"lightgreen"} _active={{bg:"blue"}}><Link></Link></Th> */}
 									</Tr>
 								)
 							})
@@ -255,6 +244,17 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 				</Modal>
 			</Center>
 		</Container>
+		</Container>
+	)
+}
+
+export function FacilityNotFound() {
+	return (
+		<Container mt={5} maxW="100lvw" borderColor={"gray.300"} borderWidth={1} boxShadow={"lg"}>
+			<Container mt={5} maxW="90lvw">
+				<Heading>Facility Availability</Heading>
+				<Text h="10lvh" fontStyle='italic' fontSize='lg' textColor='gray'>(Facility not found, unable to show availability)</Text>
+			</Container>
 		</Container>
 	)
 }

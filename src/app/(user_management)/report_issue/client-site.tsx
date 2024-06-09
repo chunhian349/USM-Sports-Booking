@@ -86,22 +86,9 @@ export default function ReportIssueClient({
                                             <Heading fontSize={'md'}>{report.report_title}</Heading>
                                             <Text fontSize={"sm"}>Report ID: {report.report_id}</Text>
                                             <Text fontSize={"sm"}>Created on {reportCreatedAt.toLocaleDateString('en-MY')} {reportCreatedAt.toLocaleTimeString('en-MY')}</Text>
-                                            <Text fontSize={"sm"}>Status: {report.report_status ? "Resolved" : "Unresolved"}</Text>
-
-                                            {/* <Text fontSize={"sm"}>Description:</Text>
-                                            <Textarea borderWidth={2} fontSize='sm' resize='none' overflowWrap='break-word' defaultValue={report.report_desc} 
-                                                _disabled={{textColor:'black', borderWidth:"2", borderColor:"gray.400"}} disabled />
-                                            
-                                            <Text fontSize={"sm"}>Admin Feedback:</Text>
-                                            <Textarea borderWidth={2} fontSize='sm' resize='none' overflowWrap='break-word' defaultValue={report.admin_feedback} 
-                                                _disabled={{textColor:'black', borderWidth:"2", borderColor:"gray.400"}} disabled /> */}
-                                            
+                                            <Text fontSize={"sm"}>Status: {report.report_status ? "Resolved" : "Unresolved"}</Text>                                           
                                             <Link as='button' fontSize='sm' textColor='blue' onClick={()=>{setSelectedReport(report); setShowDetails(true)}}>Details</Link>
                                         </VStack>
-
-                                        {/* <Spacer /> */}
-
-                                        {/* <Image src={report.report_screenshot} alt="Facility Image" mt={1} aspectRatio={2} maxW="45%" minW="200px" minH="125px" rounded={15}></Image> */}
                                     </Flex>                                
                                 )
                             })}
@@ -109,7 +96,7 @@ export default function ReportIssueClient({
                     </TabPanel>
 
                     <TabPanel>
-                    <VStack mt={3}>
+                        <VStack>
                             {reportData.map((report, index) => {
                                 if (!report.report_status) {
                                     return null
@@ -117,25 +104,14 @@ export default function ReportIssueClient({
 
                                 const reportCreatedAt = new Date(report.report_created_at)                    
                                 return (
-                                    <Flex key={index} w='100%' alignSelf='start' p={4} mb={3} borderWidth={1} borderColor="#970bf5" rounded="md" >
-                                        <VStack alignItems='start' spacing={1} w='45%'>
+                                    <Flex key={index} w='100%' alignSelf='start' p={3} borderWidth={1} borderColor="#970bf5" rounded="md" _hover={{ boxShadow:'base', bgColor:"gray.50" }} >
+                                        <VStack alignItems='start' spacing={0} w='45%'>
                                             <Heading fontSize={'md'}>{report.report_title}</Heading>
                                             <Text fontSize={"sm"}>Report ID: {report.report_id}</Text>
                                             <Text fontSize={"sm"}>Created on {reportCreatedAt.toLocaleDateString('en-MY')} {reportCreatedAt.toLocaleTimeString('en-MY')}</Text>
-                                            <Text fontSize={"sm"}>Status: {report.report_status ? "Resolved" : "Unresolved"}</Text>
-
-                                            <Text fontSize={"sm"}>Description:</Text>
-                                            <Textarea fontSize='sm' resize='none' overflowWrap='break-word' defaultValue={report.report_desc} 
-                                                _disabled={{textColor:'black', borderWidth:"2", borderColor:"gray.400"}} disabled />
-
-                                            <Text fontSize={"sm"}>Admin Feedback:</Text>
-                                            <Textarea fontSize='sm' resize='none' overflowWrap='break-word' defaultValue={report.admin_feedback} 
-                                                _disabled={{textColor:'black', borderWidth:"2", borderColor:"gray.400"}} disabled />
+                                            <Text fontSize={"sm"}>Status: {report.report_status ? "Resolved" : "Unresolved"}</Text>                                           
+                                            <Link as='button' fontSize='sm' textColor='blue' onClick={()=>{setSelectedReport(report); setShowDetails(true)}}>Details</Link>
                                         </VStack>
-
-                                        <Spacer />
-                                        
-                                        <Image src={report.report_screenshot} alt="Facility Image" mt={1} aspectRatio={2} maxW="45%" minW="200px" minH="125px" rounded={15}></Image>
                                     </Flex>                                
                                 )
                             })}

@@ -68,28 +68,32 @@ export default function ManagerClient({
             <Flex mb={3}>
                 <Text as="b" fontSize="x-large">Manage Your Sports Facilities</Text>
             </Flex>
-            <VStack spacing={3}>
-                {facilities.map((facility: any, index: number) => (
-                    <Link key={index} href={'/edit-facility/?facility_id='+ facility.facility_id} w="full" p={4} borderWidth="1px" rounded="md" _hover={{ boxShadow:'base', bgColor:"gray.50" }}>
-                    <Flex>
-                        <Image src={facility.facility_photo} fallbackSrc='no-image.png' alt="Facility Image" w="25lvw" aspectRatio={16/9} rounded={10} mr={5}/>
-                        <Flex flexDir='column' justifyContent={'flex-start'}>
-                            <Text as="b" fontSize="large">{facility.facility_name}</Text>
-                            <Text as="b">{facility.facility_location}</Text>
-                            <Text>{facility.sports_category}</Text>
-                            <Text textColor={(facility.facility_status? "green": "red")}>{(facility.facility_status? "Active": "Inactive")}</Text>
+            {(facilities.length === 0) ? (
+                <Heading fontSize='2xl' fontStyle='italic' textColor='gray'>(You have not add any sports facility yet)</Heading>
+            ): (
+                <VStack spacing={3}>
+                    {facilities.map((facility: any, index: number) => (
+                        <Link key={index} href={'/edit-facility/?facility_id='+ facility.facility_id} w="full" p={4} borderWidth="1px" rounded="md" _hover={{ boxShadow:'base', bgColor:"gray.50" }} _active={{bgColor:'gray.200'}}>
+                        <Flex>
+                            <Image src={facility.facility_photo} fallbackSrc='no-image.png' alt="Facility Image" w="25lvw" aspectRatio={16/9} rounded={10} mr={5}/>
+                            <Flex flexDir='column' justifyContent={'flex-start'}>
+                                <Text as="b" fontSize="large">{facility.facility_name}</Text>
+                                <Text as="b">{facility.facility_location}</Text>
+                                <Text>{facility.sports_category}</Text>
+                                <Text textColor={(facility.facility_status? "green": "red")}>{(facility.facility_status? "Active": "Inactive")}</Text>
+                            </Flex>
+                            <Spacer />
+                            <Text>
+                                Rating
+                                <Tag placeContent='center' ml={1} bgColor={facility.overall_rating >= 7 ? 'green' : facility.overall_rating >= 3.5 ? 'orange' : 'red'} borderRadius="full" textColor="white" w="4rem">
+                                    <TagLabel>{facility.overall_rating.toFixed(1)}</TagLabel>
+                                </Tag>
+                            </Text>
                         </Flex>
-                        <Spacer />
-                        <Text>
-                            Rating
-                            <Tag placeContent='center' ml={1} bgColor={facility.overall_rating >= 7 ? 'green' : facility.overall_rating >= 3.5 ? 'orange' : 'red'} borderRadius="full" textColor="white" w="4rem">
-                                <TagLabel>{facility.overall_rating.toFixed(1)}</TagLabel>
-                            </Tag>
-                        </Text>
-                    </Flex>
-                    </Link>
-                ))}
-            </VStack>
+                        </Link>
+                    ))}
+                </VStack>
+            )}
         </Container>
     )
 }

@@ -1,18 +1,11 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import FacilityAvailability from './client-side'
+import FacilityAvailability, { FacilityNotFound } from './client-side'
 import { createClient } from '@/utils/supabase/server'
-import { revalidatePath } from 'next/cache'
 
-const supabase = createClient()
-
-export async function AddCourt(court_name: string, court_status: boolean, facility_id: string/*, formData: FormData*/): Promise<any> {
-    // const unpackedData = {
-    //     courtName: formData.get('courtname') as string,
-    //     courtStatus: Boolean(formData.get('courtstatus')),
-    // }
-
+export async function AddCourt(court_name: string, court_status: boolean, facility_id: string/*, formData: FormData*/) {
+    const supabase = createClient()
     const { error } = await supabase
         .from('Court')
         .insert({
@@ -22,23 +15,22 @@ export async function AddCourt(court_name: string, court_status: boolean, facili
         })
 
     if (error) {
-        console.error(error)
+        const errorMessage = "Add Court failed (" + error.message + ")"
+        redirect('/error/?error=' + errorMessage)
     }
-    //revalidatePath('/edit-facility/?facility_id=' + facility_id)
-    //redirect('/edit-facility/?facility_id=' + facility_id)
 }
 
-export async function DeleteCourt(/*facility_id: string, */court_id: string): Promise<any> {
+export async function DeleteCourt(court_id: string) {
+    const supabase = createClient()
     const { error } = await supabase
         .from('Court')
         .delete()
         .eq('court_id', court_id)
 
     if (error) {
-        console.error(error)
+        const errorMessage = "Delete Court failed (" + error.message + ")"
+        redirect('/error/?error=' + errorMessage)
     }
-    //revalidatePath('/edit-facility/?facility_id=' + facility_id)
-    //redirect('/edit-facility/?facility_id=' + facility_id)
 }
 
 export default async function FacilityAvailabilityPage({
@@ -50,27 +42,11 @@ export default async function FacilityAvailabilityPage({
 }) {
     const facility_id = searchParams?.facility_id || ''
 
-    // Data from Court table
-    // let courtData = await supabase
-    //     .from('Court')
-    //     .select('*')
-    //     .eq('fk_facility_id', paramObj.searchParams.facility_id)
+    if (facility_id === '') {
+        <FacilityNotFound />
+    }
 
-    //console.log("Server courtData: " + JSON.stringify(courtData.data))
-
-    // Data from TimeSlot table, for each court
-    // let timeslotData : any = []
-    // const courtDataLength = courtData.data?.length != undefined ? courtData.data?.length : 0
-    // for (let index = 0; index < courtDataLength; index++) {
-    //     let { data, error } = await supabase
-    //         .from('BookedTimeslot')
-    //         .select('*')
-    //         .eq('fk_court_id', courtData.data?.[index].court_id)
-
-    //     // Deep copy from data to timeslotData
-    //     let tempData = JSON.parse(JSON.stringify(data))
-    //     timeslotData.push(tempData)
-    // }
+    const supabase = createClient()
 
     const { data: facilityData, error: selectFacilityError } = await supabase
         .from('SportsFacility')
@@ -78,16 +54,19 @@ export default async function FacilityAvailabilityPage({
         .eq('facility_id', facility_id)
         .single()
     
-    if (selectFacilityError || !facilityData) {
-        console.log("FacilityAvailability select SportsFacility failed")
-        console.error(selectFacilityError)
-        redirect('/')
+    if (selectFacilityError) {
+        if (selectFacilityError) {
+            const errorMessage = "Select facility failed (" + selectFacilityError.message + ")"
+            redirect('/error/?error=' + errorMessage)
+        }
+    }
+
+    if (!facilityData) {
+        return <FacilityNotFound />
     }
 
     return (
         <FacilityAvailability 
-            //courtData={courtData.data ? courtData.data : []} 
-            //timeslotData={timeslotData}
             facility_id={facility_id}
             facilityData={facilityData}
         />

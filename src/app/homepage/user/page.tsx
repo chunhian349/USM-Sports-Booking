@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import UserClient from './client-side'
+import { redirect } from 'next/navigation' 
 
 export default async function UserPage() {
   const supabase = createClient();
@@ -11,11 +12,10 @@ export default async function UserPage() {
     .eq('facility_status', true)
     .order('facility_created_at')
 
-  if (error || !facilities) {
-    console.log("UserPage select SportsFacility failed")
-    console.error(error)
-    return <UserClient facilities={[]} />
-  }
+    if (error) {
+      const errorMessage = "ManagerPage select SportsFacility failed (" + error.message + ")"
+      redirect('/error/?error=' + errorMessage)
+    }
 
-  return <UserClient facilities={facilities}/>
+  return <UserClient facilities={facilities ? facilities : []}/>
 }

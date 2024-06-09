@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import ManagerClient from './client-side'
+import { redirect } from 'next/navigation'
 
 export default async function ManagerPage({user_id} : {user_id : string | null}) {
   const supabase = createClient();
@@ -11,11 +12,10 @@ export default async function ManagerPage({user_id} : {user_id : string | null})
     .eq('fk_manager_id', user_id)
     .order('facility_created_at')
 
-  if (error || !facilities) {
-    console.log("ManagerPage select SportsFacility failed")
-    console.error(error)
-    return <ManagerClient facilities={[]} />
+  if (error) {
+    const errorMessage = "ManagerPage select SportsFacility failed (" + error.message + ")"
+    redirect('/error/?error=' + errorMessage)
   }
 
-  return <ManagerClient facilities={facilities}/>
+  return <ManagerClient facilities={facilities ? facilities : []}/>
 }

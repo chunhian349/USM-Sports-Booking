@@ -28,29 +28,30 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
     const updateFacilityImageWithId = UpdateFacilityImage.bind(null, facilityData.facility_id, user_id)
     const updateFacilityDetailsWithId = UpdateFacilityDetails.bind(null, facilityData.facility_id)
     const updateFacilityDescWithId = UpdateFacilityDesc.bind(null, facilityData.facility_id)
+    const updateFacilityRatesWithId = UpdateFacilityRates.bind(null, facilityData.facility_id)
 
-    const handleEditRatesSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        const formData = new FormData(e.currentTarget)
+    // const handleEditRatesSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    //     e.preventDefault()
+    //     const formData = new FormData(e.currentTarget)
 
-        const booking_rates: FacilityData['booking_rates'] = {
-            normal : {
-                student: parseFloat(formData.get('normStudentRate') as string),
-                staff: parseFloat(formData.get('normStaffRate') as string),
-                private: parseFloat(formData.get('normPrivateRate') as string),
-            },
-            rush : {
-                student: parseFloat(formData.get('rushStudentRate') as string),
-                staff: parseFloat(formData.get('rushStaffRate') as string),
-                private: parseFloat(formData.get('rushPrivateRate') as string)
-            }
-        }
+    //     const booking_rates: FacilityData['booking_rates'] = {
+    //         normal : {
+    //             student: parseFloat(formData.get('normStudentRate') as string),
+    //             staff: parseFloat(formData.get('normStaffRate') as string),
+    //             private: parseFloat(formData.get('normPrivateRate') as string),
+    //         },
+    //         rush : {
+    //             student: parseFloat(formData.get('rushStudentRate') as string),
+    //             staff: parseFloat(formData.get('rushStaffRate') as string),
+    //             private: parseFloat(formData.get('rushPrivateRate') as string)
+    //         }
+    //     }
 
-        const error = await UpdateFacilityRates(facilityData.facility_id, booking_rates)
-        if (error) {
-            console.error(error)
-        }
-    }
+    //     const error = await UpdateFacilityRates(facilityData.facility_id, booking_rates)
+    //     if (error) {
+    //         console.error(error)
+    //     }
+    // }
 
     return (
         <Container maxWidth="90lvw" mt={5}>
@@ -81,9 +82,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                 </ModalFooter>
                 </ModalContent>
             </Modal>
-            {/* <AspectRatio maxW="400" ratio={4/3} mb={4}>
-                <Image fallbackSrc="no-image.png" alt="facility_image" objectFit="cover" borderRadius={15}></Image>
-            </AspectRatio> */}
+
             <Heading mb={2} fontSize={{sm:"large", lg: "x-large"}}>
                 {facilityData.facility_name}
                 <Link ml={3} onClick={()=>setEditDetails(true)}><EditIcon></EditIcon></Link>
@@ -131,6 +130,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                     </ModalContent>
                 </Modal>
             </Heading>
+
             <Text fontWeight='bold' mb={1}><Icon as={FaMapLocationDot} mr='0.25rem'/>{facilityData.facility_location}</Text>
             <Text mb={1}><Icon as={MdCategory} mr='0.25rem'/>{facilityData.sports_category}</Text>
             <Text mb={1}><PhoneIcon mr='0.25rem' />{facilityData.phone_num}</Text>
@@ -176,9 +176,9 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                     <ModalContent>
                     <ModalHeader>Edit Booking Rates</ModalHeader>
                     <ModalCloseButton />
-                    <form onSubmit={(e) => handleEditRatesSubmit(e)}>
+                    <form action={updateFacilityRatesWithId}>
                     <ModalBody>
-                        <TableContainer borderColor="#970bf5" borderWidth={2} rounded={10} maxW='37.5rem'>
+                        <TableContainer borderColor="#970bf5" borderWidth={2} rounded={10}>
                             <Table size='sm' colorScheme='purple'>
                                 <Thead>
                                     <Tr>
@@ -191,7 +191,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                     <Tr>
                                         <Th>Student</Th>
                                         <Td>
-                                            <NumberInput id="normStudentRate" name="normStudentRate" defaultValue={2} min={0} step={1} precision={2}>
+                                            <NumberInput id="normStudentRate" name="normStudentRate" defaultValue={facilityData.booking_rates.normal.student} min={0} step={1} precision={2}>
                                                 <NumberInputField />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
@@ -200,7 +200,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                             </NumberInput>
                                         </Td>
                                         <Td>
-                                            <NumberInput id="rushStudentRate" name="rushStudentRate" defaultValue={5} min={0} step={1} precision={2}>
+                                            <NumberInput id="rushStudentRate" name="rushStudentRate" defaultValue={facilityData.booking_rates.rush.student} min={0} step={1} precision={2}>
                                                 <NumberInputField />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
@@ -212,7 +212,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                     <Tr>
                                         <Th>Staff</Th>
                                         <Td>
-                                            <NumberInput id="normStaffRate" name="normStaffRate" defaultValue={5} min={0} step={1} precision={2}>
+                                            <NumberInput id="normStaffRate" name="normStaffRate" defaultValue={facilityData.booking_rates.normal.staff} min={0} step={1} precision={2}>
                                                 <NumberInputField />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
@@ -221,7 +221,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                             </NumberInput>
                                         </Td>
                                         <Td>
-                                            <NumberInput id="rushStaffRate" name="rushStaffRate" defaultValue={7} min={0} step={1} precision={2}>
+                                            <NumberInput id="rushStaffRate" name="rushStaffRate" defaultValue={facilityData.booking_rates.rush.staff} min={0} step={1} precision={2}>
                                                 <NumberInputField />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
@@ -233,7 +233,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                     <Tr>
                                         <Th>Private</Th>
                                         <Td>
-                                            <NumberInput id="normPrivateRate" name="normPrivateRate" defaultValue={12} min={0} step={1} precision={2}>
+                                            <NumberInput id="normPrivateRate" name="normPrivateRate" defaultValue={facilityData.booking_rates.normal.private} min={0} step={1} precision={2}>
                                                 <NumberInputField />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
@@ -242,7 +242,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                             </NumberInput>
                                         </Td>
                                         <Td>
-                                            <NumberInput id="rushPrivateRate" name="rushPrivateRate" defaultValue={18} min={0} step={1} precision={2}>
+                                            <NumberInput id="rushPrivateRate" name="rushPrivateRate" defaultValue={facilityData.booking_rates.normal.private} min={0} step={1} precision={2}>
                                                 <NumberInputField />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
@@ -256,15 +256,18 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                         </TableContainer>
                     </ModalBody>
 
-                    <ModalFooter alignSelf='center'>
-                        <Button type='submit' colorScheme='purple' rounded='20' /*onClick={()=>setEditRates(false)}*/>
-                            Submit
-                        </Button>
+                    <ModalFooter>
+                        <Center>
+                            <Button type='submit' colorScheme='purple' rounded='20' /*onClick={()=>setEditRates(false)}*/>
+                                Submit
+                            </Button>
+                        </Center>
                     </ModalFooter>
                     </form>
                     </ModalContent>
                 </Modal>
             </Text>
+            
             <TableContainer borderWidth={1} borderColor="#970bf5" rounded={10} maxW='37.5rem'>
                 <Table size='sm' colorScheme='purple'>
                     <Thead>
@@ -319,11 +322,11 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                 <ModalHeader>Delete Facility</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
+                    {/* preventDefault is important */}
                     <form onSubmit={(e)=>{e.preventDefault(); DeleteSportsFacility(facilityData.facility_id);}}>
                     <Text mb={5} fontWeight='bold'>Are you sure you want to delete this facility?</Text>
                     <FormControl isRequired mb={3}>
                         <FormLabel >Confirmation</FormLabel>
-                        {/* <Input type="text" required _hover={{borderColor:"#970bf5", borderWidth:"2"}} _focus={{borderColor:"#970bf5", borderWidth:"3"}}/> */}
                         <Checkbox colorScheme="red" size='lg' isRequired><Text fontSize='md'>I have acknowledged that the delete action cannot be undone.</Text></Checkbox>
                     </FormControl>
                     <Center>
