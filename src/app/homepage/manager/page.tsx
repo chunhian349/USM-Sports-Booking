@@ -2,7 +2,7 @@ import { createClient } from '@/utils/supabase/server'
 import ManagerClient from './client-side'
 import { redirect } from 'next/navigation'
 
-export default async function ManagerPage({user_id} : {user_id : string | null}) {
+export default async function ManagerPage({user_id} : {user_id : string }) {
   const supabase = createClient();
 
   // Get sports facility data
