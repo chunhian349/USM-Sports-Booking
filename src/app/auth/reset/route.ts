@@ -16,6 +16,8 @@ export async function GET(request: NextRequest) {
   redirectTo.searchParams.delete('token_hash')
   redirectTo.searchParams.delete('type')
 
+  let errorMessage = ''
+
   if (token_hash && type) {
     const supabase = createClient()
 
@@ -27,9 +29,12 @@ export async function GET(request: NextRequest) {
       redirectTo.searchParams.delete('next')
       return NextResponse.redirect(redirectTo)
     }
+
+    errorMessage = error.message
   }
 
   // return the user to an error page with some instructions
   redirectTo.pathname = '/error'
+  redirectTo.searchParams.set('error', errorMessage)
   return NextResponse.redirect(redirectTo)
 }

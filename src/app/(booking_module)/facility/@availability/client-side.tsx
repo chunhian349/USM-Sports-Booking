@@ -265,7 +265,7 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 	}
 
 	return (
-		<Container mt={5} maxW="100lvw" borderColor={"grey.300"} borderWidth={1} boxShadow={"lg"}>
+		<Container mt={5} maxW="100lvw" borderColor={"gray.300"} borderWidth={1} boxShadow={"lg"}>
 		<Container mt={5} maxW="90lvw">
 			<Flex mb={3}>
 				<Heading>Facility Availability</Heading>

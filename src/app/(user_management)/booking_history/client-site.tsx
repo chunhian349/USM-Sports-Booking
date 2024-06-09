@@ -1,11 +1,17 @@
 'use client'
 
-import { Container, Center, Heading, VStack, Link, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, Flex, Box, FormControl, FormLabel, Input, Image, Spacer, Divider, Slider, SliderMark, SliderTrack, SliderFilledTrack, SliderThumb, Tooltip, Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
+import { useToast, Container, Center, Heading, VStack, Link, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, Flex, Box, FormControl, FormLabel, Input, Image, Spacer, Divider, Slider, SliderMark, SliderTrack, SliderFilledTrack, SliderThumb, Tooltip, Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
 import { ArrowBackIcon } from "@chakra-ui/icons"
 import { useState, useEffect } from "react"
 import { SubmitReview, SelectReview, type BookingDetails } from "./page"
 
-export default function BookingHistory({completedBooking, incompleteBooking, bookingDetails} : {completedBooking: {booking_id: string, transaction_time: string, transaction_method: string, transaction_amount: number}[], incompleteBooking: {booking_id: string, booking_created_at: string}[], bookingDetails: Map<string, BookingDetails[]>}) {
+export default function BookingHistory({
+    completedBooking, incompleteBooking, bookingDetails
+} : {
+    completedBooking: { booking_id: string, transaction_time: string, transaction_method: string, transaction_amount: number }[], 
+    incompleteBooking: { booking_id: string, booking_created_at: string }[], 
+    bookingDetails: Map<string, BookingDetails[]>
+}) {
     const [ fetchSignal, setFetchSignal ] = useState(false)
     const [ reviewData, setReviewData ] = useState<{fk_booking_id: string, review_rating: number, review_comment: string}[]>([])
     const [ showReviewForm, setShowReviewForm ] = useState(false)
@@ -15,23 +21,39 @@ export default function BookingHistory({completedBooking, incompleteBooking, boo
     const [ ratingValue, setRatingValue ] = useState(10)
     const [ comment, setComment ] = useState('')
     const [ showTooltip, setShowTooltip ] = useState(false)
+    const [ loading, setLoading ] = useState(false)
+    const toast = useToast()
 
     async function handleReviewSubmit() {
-        setShowReviewForm(false);
-
+        setLoading(true)
+        
         if (await SubmitReview(selectedBookingId, ratingValue, comment)) {
-            alert("Review submitted successfully!")
+            toast({
+                title: "Review submitted.",
+                description: "Your review on this booking has been submitted successfully.",
+                status: "success",
+                duration: 5000,
+                isClosable: true,
+            })
+            setShowReviewForm(false);
+            setRatingValue(10)
+            setComment('')
         }
         else {
-            alert("Review failed to submit.")
+            toast({
+                title: "Report failed to submit.",
+                description: "An error occurred while submitting your review. Please try again.",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+            })
         }
-
-        setRatingValue(10)
-        setComment('')
+        
+        setLoading(false)
         setFetchSignal(!fetchSignal)
     }
 
-    // Fetch review data initially, and fetch again after user makes a review
+    // Fetch review data initially, fetch again when user makes a review
     useEffect(() => {
         async function fetchReviewData() {
             const arr_booking_id = completedBooking.map((booking) => booking.booking_id)
@@ -72,7 +94,7 @@ export default function BookingHistory({completedBooking, incompleteBooking, boo
                                 const transaction_date = new Date(booking.transaction_time)
                                 
                                 return (
-                                    <Box key={index} w="full" p={4} borderWidth={1} borderColor="#970bf5" rounded="md" /*_hover={{ boxShadow:'base', bgColor:"gray.50" }}*/ >
+                                    <Box key={index} w="full" p={4} borderWidth={1} borderColor="#970bf5" rounded="md" _hover={{ boxShadow:'base', bgColor:"gray.50" }}>
                                         <Text fontSize={"sm"} textAlign="left">Booking ID: {booking.booking_id}</Text>
                                         <Text fontSize={"sm"} textAlign="left">Paid on {transaction_date.toLocaleDateString('en-MY')} {transaction_date.toLocaleTimeString('en-MY')}</Text>
                                         <Text fontSize={"sm"} textAlign="left">Paid using {booking.transaction_method}</Text>
@@ -103,7 +125,7 @@ export default function BookingHistory({completedBooking, incompleteBooking, boo
                                 const timeDiff = currentTime.getTime() - lockTime.getTime()
                                 const MAX_DIFF = 30 * 60 * 1000 // 30 minutes                                                 
                                 return (
-                                    <Box key={index} w="full" p={4} borderWidth={1} borderColor="#970bf5" rounded="md" /*_hover={{ boxShadow:'base', bgColor:"gray.50" }}*/ >
+                                    <Box key={index} w="full" p={4} borderWidth={1} borderColor="#970bf5" rounded="md" _hover={{ boxShadow:'base', bgColor:"gray.50" }} >
                                         <Text fontSize={"sm"} textAlign="left">Booking ID: {booking.booking_id}</Text>
                                         <Text fontSize={"sm"} textAlign="left">Locked on {new Date(booking.booking_created_at).toLocaleDateString('en-MY')} {new Date(booking.booking_created_at).toLocaleTimeString('en-MY')}</Text>
                                         <Divider my={3} borderColor="#970bf5" /> 
@@ -125,7 +147,7 @@ export default function BookingHistory({completedBooking, incompleteBooking, boo
                 </TabPanels> 
 
                 {/* Booking Details Modal */}
-                <Modal isOpen={showBookingDetails} onClose={()=>setShowBookingDetails(false)}>
+                <Modal isOpen={showBookingDetails} onClose={()=>setShowBookingDetails(false)} scrollBehavior="inside">
                     <ModalOverlay bg='blackAlpha.300' />
                     <ModalContent>
                     <ModalHeader>Booking Details</ModalHeader>
@@ -152,13 +174,19 @@ export default function BookingHistory({completedBooking, incompleteBooking, boo
                                 </div>
                             ))
                         }
+                        <Center>
+                            <Button onClick={()=>setShowBookingDetails(false)} bg="white" textColor="#970bf5" borderWidth={2} borderColor="#970bf5" w="6rem" rounded="20" 
+                                _hover={{ bg: "#970bf5", color:"white"}} _active={{bg: 'white', color:"#970bf5"}}>
+                                Close
+                            </Button>
+                        </Center>
                     </ModalBody>
                     </ModalContent>
                 </Modal>
 
                 {/* Review Modal */}
-                <Modal isOpen={showReview} onClose={()=>setShowReview(false)}>
-                    <ModalOverlay />
+                <Modal isOpen={showReview} onClose={()=>setShowReview(false)} scrollBehavior="inside">
+                    <ModalOverlay bg='blackAlpha.300' />
                     <ModalContent>
                     <ModalHeader fontSize={'2xl'}>Review</ModalHeader>
                     <ModalCloseButton />
@@ -186,19 +214,26 @@ export default function BookingHistory({completedBooking, incompleteBooking, boo
                                     </Slider>
 
                                     <FormLabel>Comment: </FormLabel>
-                                    <Input h="15lvh" as="textarea" type='text' value={reviewData.find((review) => review.fk_booking_id == selectedBookingId)?.review_comment} isDisabled></Input>
+                                    <Input h="15lvh" as="textarea" type='text' value={reviewData.find((review) => review.fk_booking_id == selectedBookingId)?.review_comment} 
+                                        _disabled={{textColor:'black', borderWidth:"2", borderColor:"gray.400"}} disabled></Input>
                                 </FormControl>
                             ) : (
                                 <Heading size='lg' as='i' textColor='gray'>(Review is Empty)</Heading>
                             )
                         }
+                        <Center>
+                            <Button onClick={()=>setShowReview(false)} bg="white" textColor="#970bf5" borderWidth={2} borderColor="#970bf5" w="6rem" rounded="20" 
+                                _hover={{ bg: "#970bf5", color:"white"}} _active={{bg: 'white', color:"#970bf5"}}>
+                                Close
+                            </Button>
+                        </Center>
                     </ModalBody>
                     </ModalContent>
                 </Modal>
 
                 {/* Review Form Modal */}
-                <Modal isOpen={showReviewForm} onClose={()=>setShowReviewForm(false)}>
-                    <ModalOverlay />
+                <Modal isOpen={showReviewForm} onClose={()=>setShowReviewForm(false)} scrollBehavior="inside">
+                    <ModalOverlay bg='blackAlpha.300'/>
                     <ModalContent>
                     <ModalHeader>Make Review</ModalHeader>
                     <ModalCloseButton />
@@ -223,11 +258,13 @@ export default function BookingHistory({completedBooking, incompleteBooking, boo
                                 </Tooltip>
                                 </Slider>
 
-                                <FormLabel >Comment:</FormLabel>
-                                <Input h="15lvh" as="textarea" type='text' placeholder="Enter Your Comment Here" onChange={(e)=>setComment(e.target.value)}></Input>
+                                <FormLabel>Comment:</FormLabel>
+                                <Input h="15lvh" as="textarea" type='text' placeholder="Enter Your Comment Here" borderWidth={2} borderColor="gray.400"
+                                    onChange={(e)=>setComment(e.target.value)}></Input>
                             </FormControl>
+
                             <Center>
-                                <Button colorScheme='purple' rounded={20} mr={3} onClick={()=>{handleReviewSubmit()}}>
+                                <Button colorScheme='purple' rounded={20} onClick={()=>{handleReviewSubmit()}} isLoading={loading}>
                                     Submit
                                 </Button>
                             </Center>

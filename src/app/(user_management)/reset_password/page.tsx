@@ -1,51 +1,30 @@
 'use client'
 
-import Head from 'next/head';
 import { useState } from 'react';
-import { createClient } from '@/utils/supabase/client';
-import { Container, Box, Button, CircularProgress, FormControl, FormLabel, Heading, Input, InputGroup, InputRightElement, Alert, AlertIcon, Flex, Center } from '@chakra-ui/react';
+import { Container, Button, FormControl, FormLabel, Heading, Input, InputGroup, InputRightElement, Alert, AlertIcon, Center, VStack, Text } from '@chakra-ui/react';
+import { ResetPassword } from './actions';
+import { useFormStatus, useFormState } from 'react-dom';
+
+const initialState = { isActionSuccess: false, message: '' }
+
+function ResetPasswordButton({formAction}: {formAction: (payload: FormData) => void}) {
+    const { pending } = useFormStatus()
+    return <Button type="submit" formAction={formAction} w="6rem" rounded="50" color="white" bg="#970bf5" _hover={{ bg: "#8709dc"}} _active={{bg:"#7808c4"}} isLoading={pending}>Submit</Button>
+}
 
 export default function ResetPasswordPage() {
-    const supabase = createClient();
-    const [isLoading, setIsLoading] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
-    const [newPassword, setNewPassword] = useState('');
     const [show, setShow] = useState(false);
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setIsLoading(true);
-        resetPassword();
-    };
-
-    const resetPassword = async () => {           
-        const { data, error } = await supabase.auth
-            .updateUser({ password: newPassword })
-        
-        console.log("password reset")
-        setSubmitted(true);
-        setNewPassword('');
-        setIsLoading(false);
-    }
-    
+    const [formState, formAction] = useFormState(ResetPassword, initialState);
     
     return(
-        <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="grey.300" rounded={20}>   
-            <Head>
-                <title>Reset Password</title>
-            </Head>
+        <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="gray.400" rounded={20}>   
             <Heading mb="50px" alignSelf="center">Reset Password</Heading>
-            <form onSubmit={handleSubmit}>
-                <FormControl isRequired mb={5} w={'20rem'}>
+            
+            <form>
+                <FormControl isRequired mb={5} w={["90%", "20rem", "20rem"]}>
                     <FormLabel htmlFor='newPassword'>Enter New Password:</FormLabel>
                     <InputGroup size='md'>
-                        <Input
-                            name="newPassword"
-                            value={newPassword}
-                            onChange={(e) => {setNewPassword(e.target.value)}}
-                            type={show ? 'text' : 'password'}
-                            placeholder='Enter password' 
-                        />
+                        <Input id='newPassword' name="newPassword" borderWidth={2} borderColor="gray.300" type={show ? 'text' : 'password'} placeholder='Enter new password' />
                         <InputRightElement width='4.5rem'>
                             <Button h='1.75rem' size='sm' onClick={() => setShow(!show)}>
                                 {show ? 'Hide' : 'Show'}
@@ -53,28 +32,30 @@ export default function ResetPasswordPage() {
                         </InputRightElement>
                     </InputGroup>
                 </FormControl>
+
+                <VStack mb={5} w={["90%", "20rem", "20rem"]} spacing={2}>
+                    <Alert status='info'>
+                        <AlertIcon />
+                        <Text fontSize='xs'>Password should be minimum of 8 characters with the combination of uppercase letters, lowercase letters, digits, and special characters (!@#$%^&*-_).</Text>
+                    </Alert>
+
+                    {(formState == initialState) ? null : formState.isActionSuccess ? (
+                        <Alert status='success'>
+                        <AlertIcon />
+                        <Text color='green' fontSize='sm'>{formState.message}</Text>
+                        </Alert>
+                    ) : (
+                        <Alert status='error'>
+                        <AlertIcon />
+                        <Text color='red' fontSize='sm'>{formState.message}</Text>
+                        </Alert>
+                    )}
+                </VStack>
+
                 <Center>
-                    <Button type='submit' colorScheme='purple' w="6.5rem" bg="#970bf5" color="white" rounded="50" _hover={{ bg: "#7a00cc"}}>
-                        {isLoading ? (
-                            <CircularProgress
-                            isIndeterminate
-                            size="24px"
-                            color="white"
-                            />
-                        ) : (
-                            'Submit'
-                        )}
-                    </Button>
+                    <ResetPasswordButton formAction={formAction} />
                 </Center>
             </form>
-            {submitted ? (
-                <Alert status='success'>
-                    <AlertIcon />
-                    Password updated successfully!
-                </Alert>
-            ):(
-                null
-            )}
         </Container>  
     )
 }

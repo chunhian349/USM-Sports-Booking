@@ -1,31 +1,33 @@
 'use client'
 
-import { FormControl, FormLabel, Input, Container, Button, Heading, Flex, Spacer, Link, Center, Text, InputGroup, InputRightElement } from '@chakra-ui/react'
-import { login, signup } from './actions'
+import { FormControl, FormLabel, Input, Container, Button, Heading, Link, Center, Text, InputGroup, InputRightElement, VStack } from '@chakra-ui/react'
+import { login } from './actions'
 import { useState } from 'react'
+import { useFormStatus, useFormState } from 'react-dom'
+const initialState = { isActionSuccess: false, message: ''}
+
+function LoginButton({formAction}: {formAction: (payload: FormData) => void}) {
+  const { pending } = useFormStatus()
+  return <Button type="submit" formAction={formAction} w="6rem" rounded="50" color="white" bg="#970bf5" _hover={{ bg: "#8709dc"}} _active={{bg:"#7808c4"}} isLoading={pending}>Login</Button>
+}
 
 export default function LoginPage() {
-  // Note: It seems that the code works without value and onChange props for the Input components, useState and handle functions might be unnecessary
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [show, setShow] = useState(false)
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value);
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value);
+  const [loginState, loginFormAction] =  useFormState(login, initialState)
 
   return (
-    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="grey.300" rounded={20}>
+    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="gray.400" rounded={20}>
       <Heading mb={10}>Login</Heading>
 
       <form>
-        <FormControl isRequired mb={5} w={{md:"20rem", lg: "20rem"}}>
+        <FormControl isRequired mb={5} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor="email">Email:</FormLabel>
-          <Input id="email" name="email" type="email" value={email} onChange={handleEmailChange} placeholder='Enter email' />   
+          <Input id="email" name="email" type="email" borderWidth={2} borderColor="gray.400" placeholder='Enter email' />   
         </FormControl>
-        <FormControl isRequired mb={5}>
+        <FormControl isRequired mb={3} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor="password">Password:</FormLabel>
           <InputGroup>
-            <Input id="password" name="password" type={show ? "text" : "password"} value={password} onChange={handlePasswordChange} placeholder='Enter password' />
+            <Input id="password" name="password" type={show ? "text" : "password"} borderWidth={2} borderColor="gray.400" placeholder='Enter password' />
             <InputRightElement width='4.5rem'>
               <Button h='1.75rem' size='sm' onClick={() => setShow(!show)}>
                 {show ? 'Hide' : 'Show'}
@@ -33,16 +35,15 @@ export default function LoginPage() {
             </InputRightElement>
           </InputGroup>
         </FormControl>
-        <Flex mb={5}>
-          <Spacer></Spacer>
-          <Button type="submit" formAction={login} w="6rem" mr={5} bg="#970bf5" color="white" rounded="50" _hover={{ bg: "#7a00cc"}}>Login</Button>
-          <Button type="submit" formAction={signup} w="6rem" rounded="50">Sign up</Button>
-          <Spacer></Spacer>
-        </Flex>
+        <VStack mb={5} w={["90%", "20rem", "22rem"]}>
+          <Text mr={1}>{'Forgot Password? '}<Link href='/reset_request' color='blue'>Reset Password</Link></Text>
+          <Text color='red'>{loginState.message}</Text> 
+        </VStack>
+
         <Center>
-          <Text mr={1}>Forgot Password?</Text>
-          <Link href='/reset_request' color='blue'>Reset Password</Link>
+          <LoginButton formAction={loginFormAction} />
         </Center>
+        
       </form>
     </Container>
   )

@@ -17,7 +17,7 @@ export type BookingDetails = {
 export async function SubmitReview(booking_id: string, review_rating: number, review_comment: string) : Promise<boolean> {
     const supabase = createClient()
 
-    const { data, error } = await supabase
+    const { error } = await supabase
         .from('Review')
         .insert([{ 
             'fk_booking_id': booking_id, 
@@ -67,6 +67,13 @@ export default async function BookingHistoryPage() {
         .select('booking_id, transaction_time, transaction_method, transaction_amount, booking_created_at')
         .eq('fk_user_id', user.id)
         .order('transaction_time', { ascending: false })
+        .returns<{
+            booking_id: string;
+            transaction_time: string;
+            transaction_method: string;
+            transaction_amount: number;
+            booking_created_at: string;
+        }[]>()
     
     if (selectBookingError || !bookingData) {
         console.log("Select Booking failed at booking history page")
@@ -74,7 +81,7 @@ export default async function BookingHistoryPage() {
         return <BookingHistory completedBooking={[]} incompleteBooking={[]} bookingDetails={new Map()} />
     } 
     // console.log(bookingData)
-    const arr_booking_id: string[] = bookingData.map((booking) => booking.booking_id as string)
+    const arr_booking_id: string[] = bookingData.map((booking) => booking.booking_id)
 
     // Fetch booked timeslot data from database
     // if arr_booking_id is null, then bookedTimeslot will be null
@@ -82,6 +89,21 @@ export default async function BookingHistoryPage() {
         .from('BookedTimeslot')
         .select('fk_booking_id, timeslot_date, timeslot_start, timeslot_end, timeslot_rate, fk_court_id, Court(court_name, SportsFacility(facility_name, facility_photo))')
         .in('fk_booking_id', arr_booking_id)
+        .returns<{
+            fk_booking_id: string;
+            timeslot_date: string;
+            timeslot_start: string;
+            timeslot_end: string;
+            timeslot_rate: number;
+            fk_court_id: string;
+            Court: {
+                court_name: string;
+                SportsFacility: {
+                    facility_name: string;
+                    facility_photo: string;
+                };
+            };
+        }[]>()
 
     if (selectTimeslotError || !bookedTimeslotData) {
         console.log("Select BookedTimeslot failed at booking history page")
@@ -89,20 +111,24 @@ export default async function BookingHistoryPage() {
         return <BookingHistory completedBooking={[]} incompleteBooking={[]} bookingDetails={new Map()} />
     }
 
+    // User with no booking data can pass above error checks, pass zero length array props
+
+    // Split booking data into completed and incomplete booking
     const completedBooking : { booking_id: string, transaction_time: string, transaction_method: string, transaction_amount: number}[] = [];
     const incompleteBooking : { booking_id: string, booking_created_at: string }[] = [];
     bookingData.forEach((booking) => {
+        // Transaction time is set only when booking is completed, else booking is incomplete
         if (booking.transaction_time /*&& booking.transaction_method && booking.transaction_amount*/) {
             completedBooking.push({
-                booking_id: booking.booking_id as string,
-                transaction_time: booking.transaction_time as string,
-                transaction_method: booking.transaction_method as string,
-                transaction_amount: booking.transaction_amount as number
+                booking_id: booking.booking_id,
+                transaction_time: booking.transaction_time,
+                transaction_method: booking.transaction_method,
+                transaction_amount: booking.transaction_amount
             })
         } else {
             incompleteBooking.push({
-                booking_id: booking.booking_id as string,
-                booking_created_at: booking.booking_created_at as string
+                booking_id: booking.booking_id,
+                booking_created_at: booking.booking_created_at
             })
         }
     })

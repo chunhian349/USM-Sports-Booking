@@ -3,8 +3,10 @@ import ReportIssueClient from "./client-site"
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation"
 
-export async function SubmitReport(user_id: string, formData: FormData) {
+export async function SubmitReport(prevState: any, formData: FormData) {
     const supabase = createClient()
+
+    const user_id = formData.get('userid') as string
     const report_title = formData.get('reportTitle') as string
     const report_desc = formData.get('reportDesc') as string
     const report_screenshot = formData.get('screenshot') as File
@@ -17,7 +19,7 @@ export async function SubmitReport(user_id: string, formData: FormData) {
 
     if (insertImageError && insertImageError.message !== 'The resource already exists') {
         console.error(insertImageError)
-        redirect('/report_issue')
+        return { isActionSuccess: false, message: insertImageError.message }
     }
 
     const { error: insertReportError } = await supabase
@@ -32,8 +34,10 @@ export async function SubmitReport(user_id: string, formData: FormData) {
 
     if (insertReportError) {
         console.error(insertReportError)
+        return { isActionSuccess: false, message: insertReportError.message }
     }
-    redirect('/report_issue')
+
+    return { isActionSuccess: true, message: "Report submitted successfully." }
 }
 
 export default async function ReportIssuePage() {

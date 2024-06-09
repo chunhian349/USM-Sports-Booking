@@ -1,83 +1,46 @@
 'use client'
 
-import Head from 'next/head';
-import { createClient } from "@/utils/supabase/client";
-import React, { useState } from 'react';
-import {
-  CircularProgress,
-  Button,
-  Heading,
-  Container,
-  FormLabel,
-  FormControl,
-  Input,
-  Alert,
-  AlertIcon,
-  Center,
-} from '@chakra-ui/react';
-  
-export default function ResetRequest(){
-    const supabase = createClient();
-    const [isLoading, setIsLoading] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
-    const [email, setEmail] = useState('');
+import { Text, Button, Heading, Container, FormLabel, FormControl, Input, Alert, AlertIcon, Center } from '@chakra-ui/react';
+import { useFormStatus, useFormState } from 'react-dom';
+import { RequestResetPassword } from './actions';
 
-    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setIsLoading(true);
-        await sendEmail();
-    };
-  
-    async function sendEmail() {      
-        const { data, error } = await supabase.auth
-            .resetPasswordForEmail(
-                email, 
-                {redirectTo: 'localhost:3000/reset_password',}
-            );
-        if(data){
-            setSubmitted(true);
-            setEmail('');
-            setIsLoading(false);
-        }
-        else if(error){
-            console.log(error);
-            setIsLoading(false);
-        }          
-    }
+const initialState = { isActionSuccess: false, message: '' }
+
+function ResetRequestButton({formAction}: {formAction: (payload: FormData) => void}) {
+    const { pending } = useFormStatus()
+    return <Button type="submit" formAction={formAction} w="6rem" rounded="50" color="white" bg="#970bf5" _hover={{ bg: "#8709dc"}} _active={{bg:"#7808c4"}} isLoading={pending}>Submit</Button>
+}
+
+export default function ResetRequest(){
+    const [formState, formAction] = useFormState(RequestResetPassword, initialState)
     
     return(
-        <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="grey.300" rounded={20}> 
-            <Head>
-                <title>Forgot Password</title>
-            </Head>
+        <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="gray.400" rounded={20}> 
             <Heading mb="50px" alignSelf="center">Forgot Password</Heading>
-            <form onSubmit={handleSubmit}>
-                <FormControl isRequired mb={5} w={"20rem"}>
+            
+            <form>
+                <FormControl isRequired mb={5} w={["90%", "20rem", "20rem"]}>
                     <FormLabel htmlFor='email'>Enter Email:</FormLabel>
-                    <Input name="email" type="email" value={email} onChange={(e) => {setEmail(e.target.value)}} required/>
+                    <Input id='email' name="email" type="email" borderWidth={2} borderColor="gray.400" placeholder='Enter your email'/>
                 </FormControl>
                 <Center>
-                    <Button type='submit' colorScheme='purple' w="6.5rem" bg="#970bf5" color="white" rounded="50" _hover={{ bg: "#7a00cc"}}>
-                        {isLoading ? (
-                            <CircularProgress
-                            isIndeterminate
-                            size="24px"
-                            color="white"
-                            />
-                        ) : (
-                            'Submit'
-                        )}
-                    </Button>
+                    <ResetRequestButton formAction={formAction}/>
                 </Center>
             </form>
-            {submitted ? (
-                <Alert status='success' mt={5}>
-                    <AlertIcon />
-                    Please check your email for the password reset link.
-                </Alert>
-            ):(
-                null
-            )}
+
+            <Center mt={3} w={["90%", "20rem", "20rem"]}>
+                {(formState == initialState) ? null : formState.isActionSuccess ? (
+                    <Alert status='success'>
+                        <AlertIcon />
+                        <Text color='green' fontSize='sm'>{formState.message}</Text>
+                    </Alert>
+                ) : (
+                    <Alert status='error'>
+                        <AlertIcon />
+                        <Text color='red' fontSize='sm'>{formState.message}</Text>
+                    </Alert>
+                )}
+            </Center>
         </Container>
     )
 }

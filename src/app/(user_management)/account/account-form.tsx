@@ -1,100 +1,81 @@
 'use client'
-import { useCallback, useEffect, useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { type User } from '@supabase/supabase-js'
-import { FormControl, FormLabel, Input, Container, Button, Heading, Flex, Spacer } from '@chakra-ui/react'
 
-export default function AccountForm({ user }: { user: User}) {
-  const supabase = createClient()
-  const [loading, setLoading] = useState(true)
-  const [fullname, setFullname] = useState('')
-  const [phonenum, setPhonenum] = useState('')
-  const [usertype, setUserType] = useState('')
+import { FormControl, FormLabel, Input, Container, Button, Heading, Center, VStack, Alert, AlertIcon, Text } from '@chakra-ui/react'
+import { useFormStatus, useFormState } from 'react-dom'
+import { UpdateProfile } from './page'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+const initialState = { isActionSuccess: false, message: ''}
 
-  const getProfile = useCallback(async () => {
-    try {
-      setLoading(true)
+function UpdateProfileButton({formAction}: {formAction: (payload: FormData) => void}) {
+    const { pending } = useFormStatus()
+    return <Button type="submit" formAction={formAction} w="10rem" bg="#970bf5" color="white" rounded="50" _hover={{ bg: "#7a00cc"}} isLoading={pending}>Update Profile</Button>
+}
 
-      const { data, error, status } = await supabase
-        .from('User')
-        .select(`full_name, phone_num, user_type`)
-        .eq('user_id', user.id) 
-        .single();
-
-      if (error && status !== 406) {
-        console.log(error)
-        throw error
-      }
-
-      if (data) {
-        setFullname(data.full_name)
-        setPhonenum(data.phone_num)
-        setUserType(data.user_type)
-      }
-    } catch (error) {
-      alert('Error loading user data!')
-    } finally {
-      setLoading(false)
+export default function AccountForm({ 
+    userData 
+}: { 
+    userData : {
+        user_id: string;
+        email: string;
+        full_name: string;
+        phone_num: string;
+        user_type: string;
     }
-  }, [user, supabase])
+}) {
+    const [formState, formAction] = useFormState(UpdateProfile, initialState)
+    const router = useRouter()
 
-  useEffect(() => {
-    getProfile()
-  }, [user, getProfile])
-
-  async function updateProfile() {
-    try {
-      setLoading(true)
-
-      const { error } = await supabase
-        .from('User')
-        .update({
-        // user_id: user.id as string,
-        full_name: fullname,
-        phone_num: phonenum,
-        // user_type: usertype
-        })
-        .eq('user_id', user.id)
-
-      if (error) throw error
-
-      alert('Profile updated!')
-    } catch (error) {
-      console.log(error)
-      alert('Error updating the profile!')
-    } finally {
-      setLoading(false)
-    }
-  }
+    useEffect(() => {
+      if (formState.isActionSuccess) {
+          router.refresh()
+      }
+    }, [formState, router])
 
   return (
-    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="#970bf5" rounded={20}>
-      <Heading mb={10}>Profile</Heading>
+    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} mt="5lvh" borderWidth={2} borderColor="gray.400" rounded={20}>
+      <Heading mb={5}>Profile</Heading>
 
       <form>
-        <FormControl mb={5} w={{md:"20rem", lg: "20rem"}}>
+        <FormControl mb={3} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor="email">Email:</FormLabel>
-          <Input id="email" name="email" type="email" value={user.email} disabled />   
+          <Input id="email" name="email" type="email" defaultValue={userData.email} _disabled={{textColor:'black', borderWidth:"2", borderColor:"gray.400"}} disabled />   
         </FormControl>
-        <FormControl mb={5}>
+        <FormControl mb={3} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor="user_type">User Type:</FormLabel>
-          <Input id="user_type" name="user_type" type="user_type" value={usertype} disabled/>
+          <Input id="user_type" name="user_type" type="user_type" defaultValue={userData.user_type} _disabled={{textColor:'black', borderWidth:"2", borderColor:"gray.400"}} disabled/>
+        </FormControl >
+        <FormControl isRequired mb={3} w={["90%", "20rem", "20rem"]}>
+          <FormLabel htmlFor="fullname">Full Name:</FormLabel>
+          <Input id="fullname" name="fullname" defaultValue={userData.full_name} borderWidth={2} borderColor="gray.400" />
         </FormControl>
-        <FormControl isRequired mb={5}>
-          <FormLabel>Full Name:</FormLabel>
-          <Input value={fullname} onChange={(e) => {setFullname(e.target.value)}} />
+        <FormControl isRequired mb={5} w={["90%", "20rem", "20rem"]}>
+          <FormLabel htmlFor='phonenum'>Phone Number:</FormLabel>
+          <Input id='phonenum' name='phonenum' defaultValue={userData.phone_num} borderWidth={2} borderColor="gray.400" />
         </FormControl>
-        <FormControl isRequired mb={5}>
-          <FormLabel>Phone Number:</FormLabel>
-          <Input value={phonenum} onChange={(e) => {setPhonenum(e.target.value)}}/>
+        <FormControl>
+          <FormLabel hidden htmlFor='userid'>User ID:</FormLabel>
+          <Input hidden id='userid' name='userid' defaultValue={userData.user_id} />
         </FormControl>
-        <Flex>
-          <Spacer></Spacer>
-          <Button type="submit" formAction={updateProfile} w="10rem" mr={5} bg="#970bf5" color="white" rounded="50" _hover={{ bg: "#7a00cc"}} disabled={loading}>
-            {loading ? 'Loading...' : 'Update Profile'}
-          </Button>
-          <Spacer></Spacer>
-        </Flex>
+
+        <VStack w={["90%", "20rem", "20rem"]} mb={3}>
+          {/* formState changed after submit, show result of form submission (success/failed) */}
+          {(formState == initialState) ? null : formState.isActionSuccess ? (
+            <Alert status='success'>
+              <AlertIcon />
+              <Text color='green' fontSize='sm'>{formState.message}</Text>
+            </Alert>
+          ) : (
+            <Alert status='error'>
+              <AlertIcon />
+              <Text color='red' fontSize='sm'>{formState.message}</Text>
+            </Alert>
+          )}
+        </VStack>
+        
+        <Center>
+            <UpdateProfileButton formAction={formAction} />
+        </Center>
       </form>
     </Container>
   )
