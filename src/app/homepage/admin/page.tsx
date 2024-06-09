@@ -12,30 +12,43 @@ export async function UpdateReport(report_id: string, report_status: boolean, ad
         .eq('report_id', report_id)
 
     if (updateReportError) {
-        console.error(updateReportError)
-        throw Error('Failed to update report')
+        // console.error(updateReportError)
+        return updateReportError.message
     }
+
+    return ''
 }
 
 export async function AddFacilityManager(formData: FormData) {
     const supabase = createClient();
     
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-    const full_name = formData.get('full_name') as string
-    const phone_num = formData.get('phone_num') as string
+    const email = formData.get('email') as string ?? ''
+    const password = formData.get('password') as string ?? ''
+    const full_name = formData.get('full_name') as string ?? ''
+    const phone_num = formData.get('phone_num') as string ?? ''
+
+    // Validate password and phone number
+    const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*-_]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+        return 'Invalid password format.'
+    }
+
+    const phoneNumRegex = /^[0-9+]*$/;
+    if (!phoneNumRegex.test(phone_num)) {
+        return "Invalid phone number format."
+    }
 
     const { data: auth, error: signUpError } = await supabase.auth.signUp({ email, password })
 
-    if (signUpError || auth.user === null) {
-        console.error(signUpError)
-        throw Error('Failed to add facility manager')
+    if (signUpError) {
+        // console.error(signUpError)
+        return signUpError.message
     }
 
     const { error: insertUserError } = await supabase
         .from('User')
         .upsert({
-            'user_id': auth.user.id,
+            'user_id': auth.user ? auth.user.id : '',
             'email': email,
             'full_name': full_name,
             'phone_num': phone_num,
@@ -43,9 +56,11 @@ export async function AddFacilityManager(formData: FormData) {
         })
 
     if (insertUserError) {
-        console.error(insertUserError)
-        throw Error('Failed to add facility manager')
+        // console.error(insertUserError)
+        return insertUserError.message
     }
+
+    return ''
 }   
 
 export default async function AdminHomePage() {
@@ -62,7 +77,7 @@ export default async function AdminHomePage() {
         .eq('user_type', 'Facility Manager')
 
     if (selectUserError || !facilityManagerData) {
-        console.error(selectUserError)
+        // console.error(selectUserError)
         return <AdminClient facilityManagerData={[]} reportData={[]} />
     }
 
@@ -85,7 +100,7 @@ export default async function AdminHomePage() {
         }[]>()
 
     if (selectReportError || !reportData) {
-        console.error(selectReportError)
+        // console.error(selectReportError)
         return <AdminClient facilityManagerData={[]} reportData={[]}  />
     }
 

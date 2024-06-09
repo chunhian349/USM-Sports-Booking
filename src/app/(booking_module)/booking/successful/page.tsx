@@ -11,10 +11,9 @@ export default async function BookingSuccessPage({
         booking_id: string
     }
 }) {
-    const booking_id = searchParams?.booking_id
-    if (!booking_id) {
-        console.log("No booking_id found at booking summary page")
-        redirect('/')
+    const booking_id = searchParams?.booking_id ?? ''
+    if (booking_id == '') {
+        redirect('/error/?error=Booking ID is missing')
     }
 
     const supabase = createClient()
@@ -22,12 +21,12 @@ export default async function BookingSuccessPage({
         .from('Booking')
         .select('booking_id, transaction_time, transaction_amount, transaction_method')
         .eq('booking_id', booking_id)
+        .returns<{booking_id: string, transaction_time: string, transaction_amount: number, transaction_method: string}[]>()
         .single()
 
     if (selectBookingError || !bookingData) {
-        console.log("Select Booking failed at booking summary page")
-        console.error(selectBookingError)
-        redirect('/')
+        const errorMessage = "Retrieve booking data failed (" + selectBookingError.message + ")"
+        redirect('/error/?error=' + errorMessage)
     }
 
     // Incomplete booking
@@ -39,39 +38,53 @@ export default async function BookingSuccessPage({
         .from('BookedTimeslot')
         .select('timeslot_date, timeslot_start, timeslot_end, timeslot_rate, fk_court_id, Court(court_name)')
         .eq('fk_booking_id', booking_id)    
-        
-    // console.log(bookedTimeslot)
+        .returns<{
+            timeslot_date: string;
+            timeslot_start: string;
+            timeslot_end: string;
+            timeslot_rate: number;
+            fk_court_id: string;
+            Court: {
+                court_name: string;
+            };
+        }[]>()
 
     if (selectTimeslotError || !bookedTimeslot) {
-        console.log("Select BookedTimeslot failed at booking summary page")
-        console.error(selectTimeslotError)
-        redirect('/')
+        const errorMessage = "Retrieve bookedTimeslot failed (" + selectTimeslotError.message + ")"
+        redirect('/error/?error=' + errorMessage)
+    }
+
+    if (bookedTimeslot.length == 0) {
+        redirect('/error/?error=The booking do not lock any timeslots')
     }
 
     const { data: facilityData, error: selectFacilityError } = await supabase
         .from('Court')
         .select('SportsFacility(facility_name, facility_photo)')
         .eq('court_id', bookedTimeslot[0].fk_court_id)
+        .returns<{
+            SportsFacility: {
+                facility_name: string;
+                facility_photo: string;
+            }
+        }[]>()
         .single()
 
     if (selectFacilityError || !facilityData) {
-        console.log("Select Court failed at booking summary page")
-        console.error(selectFacilityError)
-        redirect('/')
+        const errorMessage = "Retrieve facility data failed (" + selectFacilityError.message + ")"
+        redirect('/error/?error=' + errorMessage)
     }
-    
-    // console.log(facilityData)
 
     const { data: userData, error: selectUserError } = await supabase
         .from('Booking')
         .select('User(full_name, phone_num)')
         .eq('booking_id', booking_id)
+        .returns<{User: {full_name: string, phone_num: string}}[]>()
         .single()
     
     if (selectUserError || !userData) {
-        console.log("Select User failed at booking summary page")
-        console.error(selectUserError)
-        redirect('/')
+        const errorMessage = "Retrieve user data failed (" + selectUserError.message + ")"
+        redirect('/error/?error=' + errorMessage)
     }
 
     const bookingSummaryData: BookingSummaryData[] = [];

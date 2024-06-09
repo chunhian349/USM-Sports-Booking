@@ -22,7 +22,7 @@ export default function AddFacility() {
                 title: "Failed to Add Facility",
                 description: formState.message,
                 status: "error",
-                duration: 9000,
+                duration: 5000,
                 position: "top",
                 isClosable: true,
             })

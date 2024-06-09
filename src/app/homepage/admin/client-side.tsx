@@ -1,6 +1,6 @@
 'use client'
 
-import { Container, Flex, Heading, Box, Button, Spacer, Image, Center, Text, Tabs, Tab, TabList, TabPanels, TabPanel, Table, Thead, Tr, Th, Tbody, TableContainer, Td, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, VStack, Textarea, FormLabel, Divider, FormControl, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
+import { Container, Flex, Heading, Box, Button, Spacer, Image, Center, Text, Tabs, Tab, TabList, TabPanels, TabPanel, Table, Thead, Tr, Th, Tbody, TableContainer, Td, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, VStack, Textarea, FormLabel, Divider, FormControl, Input, InputGroup, InputRightElement, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { UpdateReport, AddFacilityManager } from "./page";
 import { useRouter } from 'next/navigation';
@@ -30,6 +30,7 @@ export default function AdminClient({
     }[]
 }){
     const router = useRouter();
+    const toast = useToast();
 
     const [selectedReport, setSelectedReport] = useState<typeof reportData[number] | null>(null);
     const [selectedManager, setSelectedManager] = useState<typeof facilityManagerData[number]>();
@@ -37,10 +38,20 @@ export default function AdminClient({
     const [showManagerDetails, setShowManagerDetails] = useState(false);
     const [showAddManager, setShowAddManager] = useState(false);
     const [show, setShow] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     
     async function handleReportUpdate(e: React.FormEvent<HTMLFormElement>) {
+        setIsLoading(true);
         if (!selectedReport) {
-            alert('Error: Report state is not set, unable to identify the report to update.')
+            toast({
+                title: "Update Report Error",
+                description: "Report state is not set, unable to identify the report to update. Please try again later.",
+                status: "error",
+                duration: 5000,
+                position: "top",
+                isClosable: true,
+            })
+            setIsLoading(false);
             return;
         }
 
@@ -48,31 +59,64 @@ export default function AdminClient({
         const formData = new FormData(e.currentTarget);
         const feedback = formData.get('feedback') as string;
 
-        try {
-            await UpdateReport(selectedReport.report_id, !selectedReport.report_status, feedback);
-        } catch (error) {
-            alert('Failed to update report');
+        const message = await UpdateReport(selectedReport.report_id, !selectedReport.report_status, feedback);
+        if (message !== '') {
+            toast({
+                title: "Update Report Error",
+                description: message,
+                status: "error",
+                duration: 5000,
+                position: "top",
+                isClosable: true,
+            })
+            setIsLoading(false);
             return;
         }
 
+        toast({
+            title: "Report Updated Successfully",
+            description: "Report has been updated successfully.",
+            status: "success",
+            duration: 3000,
+            position: "top",
+            isClosable: true,
+        })
+        setIsLoading(false);
         setShowReportDetails(false)
         router.refresh();
     }
 
     async function handleAddManager(e: React.FormEvent<HTMLFormElement>) {
+        setIsLoading(true);
         e.preventDefault();
 
         const formData = new FormData(e.currentTarget);
 
-        try {
-            await AddFacilityManager(formData);
-        } catch (error) {
-            alert('Failed to add facility manager');
+        const message = await AddFacilityManager(formData);
+
+        if (message !== '') {
+            toast({
+                title: "Add Facility Manager Error",
+                description: message,
+                status: "error",
+                duration: 5000,
+                position: "top",
+                isClosable: true,
+            })
+            setIsLoading(false);
             return;
         } 
 
-        alert('Facility manager added successfully');
+        toast({
+            title: "Facility Manager Added Successfully",
+            description: "Facility manager has been added successfully.",
+            status: "success",
+            duration: 5000,
+            position: "top",
+            isClosable: true,
+        })
         setShowAddManager(false);
+        setIsLoading(false);
         // router.refresh('/');
     }
     
@@ -224,7 +268,9 @@ export default function AdminClient({
                             </VStack>
                         </ModalBody>
                         <ModalFooter justifyContent='center'>
-                            <Button type="submit" colorScheme={selectedReport.report_status? 'red' : 'green'} rounded={20}>{selectedReport.report_status? 'Mark Unresolved' : 'Mark Resolved'}</Button>
+                            <Button type="submit" colorScheme={selectedReport.report_status? 'red' : 'green'} rounded={20} isLoading={isLoading}>
+                                {selectedReport.report_status? 'Mark Unresolved' : 'Mark Resolved'}
+                            </Button>
                         </ModalFooter>
                         </ModalContent>
                         </form>
@@ -287,7 +333,7 @@ export default function AdminClient({
                             </FormControl>
                         </ModalBody>
                         <ModalFooter justifyContent='center'>
-                            <Button type="submit" colorScheme='purple' rounded={20}>Submit</Button>
+                            <Button type="submit" colorScheme='purple' rounded={20} isLoading={isLoading}>Submit</Button>
                         </ModalFooter>
                         </form>
                     </ModalContent>

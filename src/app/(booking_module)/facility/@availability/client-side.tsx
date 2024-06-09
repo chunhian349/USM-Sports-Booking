@@ -1,6 +1,6 @@
 'use client'
 
-import { Container, Heading, Flex, Box, Spacer, Text, Input, Center, TableContainer, Table, Thead, Tr, Th, Button, Tbody, Link } from "@chakra-ui/react"
+import { Container, Heading, Flex, Box, Spacer, Text, Input, Center, TableContainer, Table, Thead, Tr, Th, Button, Tbody, useToast } from "@chakra-ui/react"
 import { useState, useEffect } from 'react'
 import { MakeBooking, type CourtData, Timeslot } from "./default"
 import { useRouter } from 'next/navigation'
@@ -63,16 +63,19 @@ function GetBookingRates(
 	let userBookingRates: {normal: number, rush: number} = {normal: bookingRates.normal.private, rush: bookingRates.rush.private};
 
 	switch (userType) {
-		case 'student':
+		case 'student': {
 			userBookingRates.normal = bookingRates.normal.student
 			userBookingRates.rush = bookingRates.rush.student
-			break
-		case 'staff': 
+			break;
+		}
+		case 'staff': {
 			userBookingRates.normal = bookingRates.normal.staff
 			userBookingRates.rush = bookingRates.rush.staff
-			break
-		default:
-			break
+			break;
+		}
+		default: {
+			break;
+		}
 	}
 	
 	return userBookingRates
@@ -132,9 +135,8 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 				})
 				.catch((error) => {
 					// Unnecessary alert when refresh the page too fast
-					console.error(error)
-					alert("Failed to fetch court data")
-					router.push('/')
+					const errorMessage = "Fetch court data failed (in facility/availability)"
+					router.push('/error/?error=' + errorMessage)
 				}) 			
 		}
 		fetchData()
@@ -149,6 +151,8 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 	//console.log(maxBookingDate)
 	const [ date, setDate ] = useState(todayDate.toISOString().slice(0, 10))
 	//console.log(timeSlotBooked)
+	const [ isLoading, setIsLoading ] = useState(false)
+	const toast = useToast()
 	
 	// courtData should be the latest update before fetching timeslot data
 	async function fetchTimeslotData (courtData: CourtData[], date: string) {
@@ -195,9 +199,8 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 				//console.log(timeSlotBooked)
 			})
 			.catch((error) => {
-				console.error(error)
-				alert("Failed to fetch timeslot data")
-				router.push('/')
+				const errorMessage = "Fetch timeslot data failed (in facility/availability)"
+				router.push('/error/?error=' + errorMessage)
 			})
 	}
 
@@ -234,34 +237,75 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 	}
 
 	async function handleMakeBooking(facility_id: string, selectedTimeslot: Timeslot[]) {
-		const makeBookingResult : string = await MakeBooking(facility_id, selectedTimeslot)
-
+		setIsLoading(true)
+		
+		const makeBookingResult = await MakeBooking(facility_id, selectedTimeslot)
+		
 		// Redirect to other page if negative result
 		switch (makeBookingResult) {
-			case "selectedTimeslot_null":
-				alert("Please select at least one timeslot to make booking")
-				break
+			case "selectedTimeslot_null": {
+				toast({
+					title: "Failed to Make Booking",
+					description: "Please select at least one timeslot to make booking",
+					status: "error",
+					duration: 5000,
+					position: "top",
+					isClosable: true,
+				})
+				break;
+			}
 
-			case "user_null":
-				alert("Please login to make booking")
+			case "user_null": {
+				toast({
+					title: "Failed to Make Booking",
+					description: "Please login to make booking",
+					status: "error",
+					duration: 5000,
+					position: "top",
+					isClosable: true,
+				})
 				router.push('/login')
-				break
+				break;
+			}
 
-			case "booking_null":
-				alert("Database error when make booking, please try again")
-				router.push('/')
-				break
+			case "booking_null": {
+				toast({
+					title: "Failed to Make Booking",
+					description: "Database error when make booking, please try again",
+					status: "error",
+					duration: 5000,
+					position: "top",
+					isClosable: true,
+				})
+				break;
+			}
 			
-			case "bookedTimeslot_null":
-				alert("Selected timeslot might be locked by other users, please select other timeslot to make booking")
-				router.push('/')
-				break
+			case "bookedTimeslot_null": {
+				toast({
+					title: "Failed to Make Booking",
+					description: "Selected timeslot might be locked by other users, please select other timeslot to make booking",
+					status: "error",
+					duration: 5000,
+					position: "top",
+					isClosable: true,
+				})
+				break;
+			}
 			
-			default:
-				alert("Successfully locked selected timeslot")
+			default: {
+				toast({
+					title: "Make Booking Successfully",
+					description: "Directing to booking summary page...",
+					status: "success",
+					duration: 3000,
+					position: "top",
+					isClosable: true,
+				})
 				router.push('/booking/summary/?booking_id=' + makeBookingResult)
-				break
+				break;
+			}
 		}
+		setIsLoading(false)
 	}
 
 	return (
@@ -282,7 +326,9 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 
 			<Flex>
 				<Text mb={2}>
-					Date: <Input type="date" maxW="200px" defaultValue={date} min={todayDate.toISOString().slice(0, 10)} max={maxBookingDate.toISOString().slice(0, 10)} onChange={(event: any) => {setFetchSignal(!fetchSignal); setDate(event.target.value)}}></Input>
+					Date: 
+					<Input type="date" defaultValue={date} min={todayDate.toISOString().slice(0, 10)} max={maxBookingDate.toISOString().slice(0, 10)} 
+					onChange={(e) => {setFetchSignal(!fetchSignal); setDate(e.target.value)}} borderColor={"black"} borderWidth={1} />
 				</Text>
 				<Spacer />
 				<Text as='b' fontSize='large'>
@@ -339,7 +385,8 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 			</TableContainer>
 
 			<Center mb={5}>
-				<Button bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} rounded={20} mr={4} onClick={() => {handleMakeBooking(facility_id, selectedTimeslot)}} isDisabled={selectedTimeslot.length == 0}>Make Booking<Link></Link></Button>
+				<Button bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} rounded={20} mr={4} isDisabled={selectedTimeslot.length == 0}
+				onClick={() => {handleMakeBooking(facility_id, selectedTimeslot)}} isLoading={isLoading}>Make Booking</Button>
 			</Center>
 		</Container>
 		</Container>

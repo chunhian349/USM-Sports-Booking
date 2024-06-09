@@ -24,9 +24,11 @@ export default async function FacilityDetailsPage({
 
         if (User && User.user_type) {
             user_type = (User.user_type as string).toLowerCase()
-        } else {
-            console.log("Facility Details page select User failed")
-            console.error(selectUserError)
+        } 
+        
+        if (selectUserError) {
+            const errorMessage = "Failed to get user data (" + selectUserError.message + ")"
+            redirect('/error/?error=' + errorMessage)
         }
     }
 
@@ -39,11 +41,9 @@ export default async function FacilityDetailsPage({
         .single()
 
     if (selectFacilityError) {
-        console.log("Facility Details page select SportsFacility failed")
-        console.error(selectFacilityError)
-        redirect('/')
+        const errorMessage = "Retrieve sports facility detials failed (" + selectFacilityError.message + ")"
+        redirect('/error/?error=' + errorMessage)
     }
 
-    //console.log("User id from page: " + user.id)
-    return <FacilityDetails facilityData={facilityData as FacilityData} user_type={user_type}></FacilityDetails>
+    return <FacilityDetails facilityData={ facilityData } user_type={user_type}></FacilityDetails>
 }

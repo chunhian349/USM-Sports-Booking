@@ -32,7 +32,7 @@ export default function BookingHistory({
                 title: "Review submitted.",
                 description: "Your review on this booking has been submitted successfully.",
                 status: "success",
-                duration: 5000,
+                duration: 3000,
                 isClosable: true,
             })
             setShowReviewForm(false);

@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import FacilityAvailability from './client-side'
+import { FacilityNotFound } from '@/app/(facility_management)/edit-facility/@availability/client-side'
 import { createClient } from '@/utils/supabase/server'
 
 // Data from Court table
@@ -22,7 +23,6 @@ export type Timeslot = {
     timeslot_rate: number,
     timeslot_index: number,
 }
-
 
 export async function MakeBooking(facility_id: string, selectedTimeslot: Timeslot[]) {
     const supabase = createClient()
@@ -49,10 +49,10 @@ export async function MakeBooking(facility_id: string, selectedTimeslot: Timeslo
 
     // Failed booking, redirect to same page for retry
     if (error_booking_data || !booking_data) {
-        console.log("Insert Booking failed")
-        console.error(error_booking_data)
+        //console.log("Insert Booking failed")
+        // console.error(error_booking_data)
         //redirect('/')
-        // TODO: return error, then redirect to same page at client component
+        // return error, then redirect to same page at client component
         return "booking_null"
     }
 
@@ -70,10 +70,10 @@ export async function MakeBooking(facility_id: string, selectedTimeslot: Timeslo
 
     // Failed booking, redirect to same page for retry
     if (error_bookedTimeslot) {
-        console.log("Insert BookedTimeslot failed")
-        console.error(error_booking_data)
+        // console.log("Insert BookedTimeslot failed")
+        // console.error(error_booking_data)
         //redirect('/')
-        // TODO: return error, then redirect to same page at client component
+        // return error, then redirect to same page at client component
         return "bookedTimeslot_null"
     }
 
@@ -87,28 +87,32 @@ export default async function FacilityAvailabilityPage({
         facility_id: string
     }
 }) {
-    const facility_id = searchParams?.facility_id
+    const facility_id = searchParams?.facility_id ?? ''
 
-    if (!facility_id) {
-        redirect('/')
+    if (facility_id == '') {
+        return <FacilityNotFound />
     }
 
     const supabase = createClient()
     // Retrieve facility data 
-    let { data: facilityData, error } = await supabase
+    const { data: facilityData, error: selectFacilityError } = await supabase
         .from('SportsFacility')
         .select('facility_start_time, facility_end_time, timeslot_interval, booking_rates')
         .eq('facility_id', facility_id)
         .single()
     
-    if (error || !facilityData) {
-        console.log("FacilityAvailability select SportsFacility failed")
-        console.error(error)
-        redirect('/')
+    if (selectFacilityError) {
+        const errorMessage = "Retrieve sports facility data failed (" + selectFacilityError.message + ")"
+        redirect('/error/?error=' + errorMessage)
+    }
+
+    if (!facilityData) {
+        return <FacilityNotFound />
     }
 
     const { data: auth } = await supabase.auth.getUser()
 
+    // Show private rate
     if (!auth.user) {
         return (
             <FacilityAvailability 
@@ -125,14 +129,12 @@ export default async function FacilityAvailabilityPage({
         .eq('user_id', auth.user.id)
         .single()
 
-    //console.log(User)
     if (selectUserError) {
-        console.log("FacilityAvailabilityPage select User failed")
-        console.error(selectUserError)
+        const errorMessage = "Retrieve user data failed in facility availability page (" + selectUserError.message + ")"
+        redirect('/error/?error=' + errorMessage)
     }
     if (!User) {
-        // auth.user.id is not in the User table
-        redirect('/auth/signout')
+        redirect('/error/?error=No user data found for the current user. Please contact the administrator.')
     }
 
     return (

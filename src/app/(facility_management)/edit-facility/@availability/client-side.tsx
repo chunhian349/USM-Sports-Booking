@@ -71,8 +71,8 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 					setCourtDataState(courtData)
 				}
 			} catch (error) {
-				console.log("api/getcourt failed")
-				console.error(error)
+				const errorMessage = "Fetch court data failed (in edit-facility/availability)"
+				router.push('/error/?error=' + errorMessage)
 			}
 		}
 		fetchData()
@@ -170,7 +170,9 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 				</Center>
 			</Flex>
 
-			<Text mb={2}>Date: <Input type="date" maxW="200px" defaultValue={date} onChange={(event: any) => {setDate(event.target.value)}}></Input></Text>
+			<Text mb={2}>
+				Date: <Input type="date" maxW="200px" defaultValue={date} onChange={(event: any) => {setDate(event.target.value)}} borderColor={"black"} borderWidth={1} />
+			</Text>
 
 			<TableContainer borderColor='black' borderWidth={1} mb={4}>
 				<Table variant='simple' size='sm'>

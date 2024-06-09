@@ -1,6 +1,6 @@
 'use client'
 
-import { Container, Heading, Flex, Image, Spacer, VStack, Text, Divider, Link, Center, Box, Button  } from "@chakra-ui/react"
+import { Container, Heading, Flex, Image, Spacer, VStack, Text, Divider, Center, Box, Button, useToast  } from "@chakra-ui/react"
 import { MakePayment, isBookingExpired, type BookingSummaryData } from "./page"
 import { useState, useEffect } from "react"
 
@@ -11,6 +11,7 @@ export default function BookingSummary({
 }) {
     const [paymentMethod, setPaymentMethod] = useState("Online Banking")
     const [ isExpired, setIsExpired ] = useState(true)
+    const [ isLoading, setIsLoading ] = useState(false)
     let paymentAmount = 0
 
     useEffect(() => {
@@ -19,8 +20,22 @@ export default function BookingSummary({
         });
       }, [booking_id]);
 
-    function HandlePaymentButton(booking_id:string, paymentMethod: string, paymentAmount: number) {
-        MakePayment(booking_id, paymentMethod, paymentAmount)
+    async function HandlePaymentButton(booking_id:string, paymentMethod: string, paymentAmount: number) {
+        setIsLoading(true)
+        const toast = useToast()
+        const errorMessage = await MakePayment(booking_id, paymentMethod, paymentAmount)
+
+        if (errorMessage != undefined) {
+            toast({
+                title: "Failed to Make Payment",
+                description: errorMessage,
+                status: "error",
+                duration: 5000,
+                position: "top",
+                isClosable: true,
+            })
+        }
+        setIsLoading(false)
     }
 
     return (
@@ -60,8 +75,8 @@ export default function BookingSummary({
             <Divider mb={5} borderColor="#970bf5" />
 
             {!isExpired ? (
-                <div>
-                    <Heading fontSize={"2xl"} mb={3}>Select Payment Method</Heading>
+                <Box>
+                    <Heading fontSize={"2xl"} mb={3}>Select Payment Method: {paymentMethod}</Heading>
                     <Flex mb={5}>
                         <Box as="button" borderWidth={1} borderColor="black" p={5} rounded={10} _hover={{bg:"gray.50"}} _active={{bg:"gray.100"}} 
                             bg={paymentMethod ==  "Online Banking" ? "gray.50" : "white"} onClick={() => setPaymentMethod("Online Banking")} 
@@ -75,7 +90,7 @@ export default function BookingSummary({
                             <Image src="/credit-card-logo.png" alt="Credit Card" aspectRatio={3} maxW="200px" maxH="80px" borderWidth={1} borderColor="black"></Image>
                         </Box>
                     </Flex>
-                </div>
+                </Box>
                 ) : null
             }
 
@@ -83,7 +98,8 @@ export default function BookingSummary({
                 {
                     isExpired ? 
                     (<Button rounded={20} isDisabled >Booking Expired</Button>) :
-                    (<Button rounded={20} bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} onClick={() => HandlePaymentButton(booking_id, paymentMethod, paymentAmount)} >Proceed to Payment</Button>)
+                    (<Button rounded={20} bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} isLoading={isLoading}
+                        onClick={() => HandlePaymentButton(booking_id, paymentMethod, paymentAmount)} >Proceed to Payment</Button>)
                 }
             </Center>
         </Container>

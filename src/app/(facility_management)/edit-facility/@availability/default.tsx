@@ -40,7 +40,7 @@ export default async function FacilityAvailabilityPage({
         facility_id: string
     }
 }) {
-    const facility_id = searchParams?.facility_id || ''
+    const facility_id = searchParams?.facility_id ?? ''
 
     if (facility_id === '') {
         <FacilityNotFound />
