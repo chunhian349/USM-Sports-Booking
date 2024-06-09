@@ -7,9 +7,9 @@ import { redirect } from 'next/navigation'
 export async function UpdateProfile(prevState: any, formData: FormData) {
     const supabase = createClient()
 
-    const user_id = formData.get('userid') as string
-    const fullname = formData.get('fullname') as string
-    const phonenum = formData.get('phonenum') as string
+    const user_id = formData.get('userid') as string ?? ''
+    const fullname = formData.get('fullname') as string ?? ''
+    const phonenum = formData.get('phonenum') as string ?? ''
 
     const phoneRegex = /^[0-9+]*$/
     if (!phoneRegex.test(phonenum)) {

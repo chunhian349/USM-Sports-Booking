@@ -30,29 +30,6 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
     const updateFacilityDescWithId = UpdateFacilityDesc.bind(null, facilityData.facility_id)
     const updateFacilityRatesWithId = UpdateFacilityRates.bind(null, facilityData.facility_id)
 
-    // const handleEditRatesSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault()
-    //     const formData = new FormData(e.currentTarget)
-
-    //     const booking_rates: FacilityData['booking_rates'] = {
-    //         normal : {
-    //             student: parseFloat(formData.get('normStudentRate') as string),
-    //             staff: parseFloat(formData.get('normStaffRate') as string),
-    //             private: parseFloat(formData.get('normPrivateRate') as string),
-    //         },
-    //         rush : {
-    //             student: parseFloat(formData.get('rushStudentRate') as string),
-    //             staff: parseFloat(formData.get('rushStaffRate') as string),
-    //             private: parseFloat(formData.get('rushPrivateRate') as string)
-    //         }
-    //     }
-
-    //     const error = await UpdateFacilityRates(facilityData.facility_id, booking_rates)
-    //     if (error) {
-    //         console.error(error)
-    //     }
-    // }
-
     return (
         <Container maxWidth="90lvw" mt={5}>
             <Link onClick={()=>setShowUploadImg(true)}>

@@ -6,10 +6,10 @@ import { redirect } from "next/navigation"
 export async function SubmitReport(prevState: any, formData: FormData) {
     const supabase = createClient()
 
-    const user_id = formData.get('userid') as string
-    const report_title = formData.get('reportTitle') as string
-    const report_desc = formData.get('reportDesc') as string
-    const report_screenshot = formData.get('screenshot') as File
+    const user_id = formData.get('userid') as string ?? ''
+    const report_title = formData.get('reportTitle') as string ?? ''
+    const report_desc = formData.get('reportDesc') as string ?? ''
+    const report_screenshot = formData.get('screenshot') as File ?? null
 
     const screenshotURL = 'reportScreenshot/' + user_id + '/' + report_screenshot.name
     const { error: insertImageError } = await supabase

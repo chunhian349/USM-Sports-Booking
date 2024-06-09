@@ -57,7 +57,7 @@ export default function AdminClient({
 
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
-        const feedback = formData.get('feedback') as string;
+        const feedback = formData.get('feedback') as string ?? '';
 
         const message = await UpdateReport(selectedReport.report_id, !selectedReport.report_status, feedback);
         if (message !== '') {

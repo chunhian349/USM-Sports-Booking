@@ -6,8 +6,8 @@ export async function signup(prevState: any, formData: FormData) {
   const supabase = createClient()
 
   const data = {
-    email: formData.get('email') as string,
-    password: formData.get('password') as string,
+    email: formData.get('email') as string ?? '',
+    password: formData.get('password') as string ?? '',
   }
 
   // Validate password format (8 characters, which at least 1 uppercase, 1 lowercase, 1 number each)
