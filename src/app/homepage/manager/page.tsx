@@ -1,8 +1,14 @@
+'use server'
 import { createClient } from '@/utils/supabase/server'
 import ManagerClient from './client-side'
 import { redirect } from 'next/navigation'
+import { NextPage } from 'next'
 
-export default async function ManagerPage({user_id} : {user_id : string }) {
+interface ManagerPageProps {
+  user_id: string;
+}
+
+const ManagerPage: NextPage<ManagerPageProps> = async ({ user_id }: ManagerPageProps) => {
   const supabase = createClient();
 
   // Get sports facility data
@@ -18,4 +24,6 @@ export default async function ManagerPage({user_id} : {user_id : string }) {
   }
 
   return <ManagerClient facilities={facilities ? facilities : []}/>
-}
+};
+
+export default ManagerPage;

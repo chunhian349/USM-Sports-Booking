@@ -1,3 +1,4 @@
+'use server'
 import NavAction from "./client-side";
 import { redirect } from 'next/navigation'
 import { createClient } from "@/utils/supabase/server";
