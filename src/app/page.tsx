@@ -28,7 +28,7 @@ export default async function AppPage() {
 
   const user_type = User.user_type.toLowerCase()
   if (user_type == 'facility manager') {
-    return <ManagerHomepage user_id={user.id} />
+    return <ManagerHomepage />
   }
   else if (user_type == 'admin') {
     return <AdminHomePage />
