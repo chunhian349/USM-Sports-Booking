@@ -133,6 +133,7 @@ export default function BookingHistory({
                                             <Button size={"sm"} colorScheme="green" mr={3} onClick={()=>{setShowBookingDetails(true); setSelectedBookingId(booking.booking_id)}}>Details</Button>                               
                                             {
                                                 timeDiff < MAX_DIFF ? (
+                                                    // TODO: Cannot button in link, need to change another way
                                                     <Link href={"/booking/summary/?booking_id="+booking.booking_id}><Button size={"sm"} colorScheme="purple" mr={3}>Checkout</Button></Link>
                                                 ) : (
                                                     <Button size={"sm"} colorScheme="gray" mr={3} isDisabled>Expired</Button>

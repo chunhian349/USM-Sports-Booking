@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Button, FormControl, FormLabel, Heading, Input, InputGroup, InputRightElement, Alert, AlertIcon, Center, VStack, Text } from '@chakra-ui/react';
 import { ResetPassword } from './actions';
 import { useFormStatus, useFormState } from 'react-dom';
+import { useRouter } from 'next/navigation';
 
 const initialState = { isActionSuccess: false, message: '' }
 
@@ -15,6 +16,13 @@ function ResetPasswordButton({formAction}: {formAction: (payload: FormData) => v
 export default function ResetPasswordPage() {
     const [show, setShow] = useState(false);
     const [formState, formAction] = useFormState(ResetPassword, initialState);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (formState.isActionSuccess) {
+            router.push('/');
+        }
+    }, [formState, router])
     
     return(
         <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="gray.400" rounded={20}>   

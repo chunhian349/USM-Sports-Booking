@@ -148,7 +148,7 @@ export default function ReportIssueClient({
                             <Text fontSize={"sm"} mb={1}>Description:</Text>
                             <Textarea id="reportDesc" name="reportDesc" fontSize={'sm'} overflowWrap='break-word' defaultValue={selectedReport.report_desc} mb={2} readOnly></Textarea>
                             <FormLabel htmlFor="feedback" fontSize={"sm"} mb={1}>Admin Feedback:</FormLabel>
-                            <Textarea id="feedback" name="feedback" fontSize='sm' defaultValue={selectedReport.admin_feedback}></Textarea>
+                            <Textarea id="feedback" name="feedback" fontSize='sm' defaultValue={selectedReport.admin_feedback} readOnly></Textarea>
                         </VStack>
                     </ModalBody>
                     <ModalFooter justifyContent='center'>

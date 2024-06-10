@@ -12,6 +12,7 @@ export default function BookingSummary({
     const [paymentMethod, setPaymentMethod] = useState("Online Banking")
     const [ isExpired, setIsExpired ] = useState(true)
     const [ isLoading, setIsLoading ] = useState(false)
+    const toast = useToast()
     let paymentAmount = 0
 
     useEffect(() => {
@@ -22,7 +23,6 @@ export default function BookingSummary({
 
     async function HandlePaymentButton(booking_id:string, paymentMethod: string, paymentAmount: number) {
         setIsLoading(true)
-        const toast = useToast()
         const errorMessage = await MakePayment(booking_id, paymentMethod, paymentAmount)
 
         if (errorMessage != undefined) {

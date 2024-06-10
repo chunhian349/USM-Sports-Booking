@@ -71,6 +71,8 @@ export async function UpdateFacilityDetails(facility_id: string, formData: FormD
     const sportsCategory = formData.get('sports') as string ?? '';
     const phoneNumber = formData.get('phone') as string ?? '';
     const status = Boolean(formData.get('status'));
+
+    // TODO: Add validation for phone number
     
     const supabase = createClient()
     const { error } = await supabase

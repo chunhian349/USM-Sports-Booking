@@ -32,7 +32,7 @@ export default function NavAction({user_id, user_email, user_type} : {user_id: s
             </Heading>
             <Spacer />
             <Flex mr='5.5lvw'>
-                {user_type == 'admin' || user_type == 'facility_manager' ? (
+                {user_type == 'admin' || user_type == 'facility manager' ? (
                     <Link href='/account' fontSize={{sm:"xs", md:"medium", lg:"large"}} borderRightColor="#970bf5" borderRightWidth={3} pr={2} style={{textDecoration:'none'}}>
                         {user_email}
                     </Link>

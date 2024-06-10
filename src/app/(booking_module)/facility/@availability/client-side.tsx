@@ -211,6 +211,14 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 		}
 		fetchData()
 	}, [courtData, date, router, timeslots, todayDate])	
+
+	function addTime(time: string, timeInterval: number): string {
+		const [hours, minutes] = time.split(':').map(Number);
+		const totalMinutes = hours * 60 + minutes + timeInterval;
+		const newHours = Math.floor(totalMinutes / 60);
+		const newMinutes = totalMinutes % 60;
+		return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`;
+	}
 	
 	function handleTimeslotClicked(row: number, column: number) {
 		let newSelectedTimeslot = [...selectedTimeslot]
@@ -227,7 +235,7 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 			const timeslot_rate = timeslots[column] >= RUSH_HOUR ? userBookingRates.rush : userBookingRates.normal
 			//console.log(timeslot_rate)
 			const timeslot_start = timeslots.at(column) as string
-			const timeslot_end = (timeslots.at(column + 1) ? timeslots.at(column + 1) : "00:00") as string
+			const timeslot_end = (timeslots.at(column + 1) ? timeslots.at(column + 1) : addTime(timeslot_start, facilityData.timeslot_interval)) as string
 			newSelectedTimeslot.push({row, column, court_id: courtData[row].court_id, timeslot_date: date, timeslot_start, timeslot_end, timeslot_rate, timeslot_index: column})
 		}
 

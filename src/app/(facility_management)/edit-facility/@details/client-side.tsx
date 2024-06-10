@@ -219,7 +219,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                             </NumberInput>
                                         </Td>
                                         <Td>
-                                            <NumberInput id="rushPrivateRate" name="rushPrivateRate" defaultValue={facilityData.booking_rates.normal.private} min={0} step={1} precision={2}>
+                                            <NumberInput id="rushPrivateRate" name="rushPrivateRate" defaultValue={facilityData.booking_rates.rush.private} min={0} step={1} precision={2}>
                                                 <NumberInputField />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
