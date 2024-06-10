@@ -4,7 +4,7 @@ import { Container, Heading, Text, Image, Divider, AspectRatio, Icon, TableConta
 import { InfoIcon, PhoneIcon } from "@chakra-ui/icons"
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdCategory } from "react-icons/md";
-import { FacilityData } from "@/app/(facility_management)/edit-facility/@details/default";
+import { type FacilityData } from "@/app/(facility_management)/edit-facility/@details/actions";
 
 export default function FacilityDetails({facilityData, user_type}: {facilityData: FacilityData, user_type: string}) {
     
