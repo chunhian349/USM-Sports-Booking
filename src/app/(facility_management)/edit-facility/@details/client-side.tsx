@@ -343,7 +343,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                 </Thead>
                                 <Tbody>
                                     <Tr>
-                                        <Th>Student</Th>
+                                        <Th>USM Student</Th>
                                         <Td>
                                             <NumberInput id="normStudentRate" name="normStudentRate" defaultValue={facilityData.booking_rates.normal.student} min={0} step={1} precision={2} focusBorderColor="purple.500" variant="filled">
                                                 <NumberInputField borderColor="purple.200" borderWidth="2px" _hover={{borderColor:"purple.500"}} />
@@ -364,7 +364,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                         </Td>
                                     </Tr>
                                     <Tr>
-                                        <Th>Staff</Th>
+                                        <Th>USM Staff</Th>
                                         <Td>
                                             <NumberInput id="normStaffRate" name="normStaffRate" defaultValue={facilityData.booking_rates.normal.staff} min={0} step={1} precision={2} focusBorderColor="purple.500" variant="filled">
                                                 <NumberInputField borderColor="purple.200" borderWidth="2px" _hover={{borderColor:"purple.500"}} />
@@ -431,7 +431,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                     </Thead>
                     <Tbody>
                         <Tr>
-                            <Th>Student</Th>
+                            <Th>USM Student</Th>
                             <Td>
                                 {facilityData.booking_rates.normal.student.toFixed(2)}
                             </Td>
@@ -440,7 +440,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                             </Td>
                         </Tr>
                         <Tr>
-                            <Th>Staff</Th>
+                            <Th>USM Staff</Th>
                             <Td>
                                 {facilityData.booking_rates.normal.staff.toFixed(2)}
                             </Td>

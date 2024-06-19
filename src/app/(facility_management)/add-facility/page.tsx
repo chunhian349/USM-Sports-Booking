@@ -120,7 +120,7 @@ export default function AddFacility() {
                             </Thead>
                             <Tbody>
                                 <Tr>
-                                    <Th>Student</Th>
+                                    <Th>USM Student</Th>
                                     <Td>
                                         <NumberInput id="normStudentRate" name="normStudentRate" defaultValue={2} min={0} step={1} precision={2} focusBorderColor='purple.500'>
                                             <NumberInputField borderColor="purple.100" borderWidth="2px" _hover={{borderColor:"purple.200"}} />
@@ -141,7 +141,7 @@ export default function AddFacility() {
                                     </Td>
                                 </Tr>
                                 <Tr>
-                                    <Th>Staff</Th>
+                                    <Th>USM Staff</Th>
                                     <Td>
                                         <NumberInput id="normStaffRate" name="normStaffRate" defaultValue={5} min={0} step={1} precision={2} focusBorderColor='purple.500'>
                                             <NumberInputField borderColor="purple.100" borderWidth="2px" _hover={{borderColor:"purple.200"}} />

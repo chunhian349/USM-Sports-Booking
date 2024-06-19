@@ -56,7 +56,7 @@ export default function FacilityDetails({facilityData, user_type}: {facilityData
                     </Thead>
                     <Tbody>
                         <Tr bg={user_type == 'student' ? '#f4e6fe' : 'white'} textColor={user_type == 'student' ? 'black' : 'gray'}>
-                            <Td fontWeight='bold'>Student</Td>
+                            <Td fontWeight='bold'>USM Student</Td>
                             <Td>
                                 {facilityData.booking_rates.normal.student.toFixed(2)}
                             </Td>
@@ -65,7 +65,7 @@ export default function FacilityDetails({facilityData, user_type}: {facilityData
                             </Td>
                         </Tr>
                         <Tr bg={user_type == 'staff' ? '#f4e6fe' : 'white'} textColor={user_type == 'staff' ? 'black' : 'gray'}>
-                            <Td fontWeight='bold'>Staff</Td>
+                            <Td fontWeight='bold'>USM Staff</Td>
                             <Td>
                                 {facilityData.booking_rates.normal.staff.toFixed(2)}
                             </Td>
