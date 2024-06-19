@@ -168,7 +168,7 @@ export default function ReportIssueClient({
                     <form>
                         <FormControl>
                             <FormLabel hidden htmlFor='userid'>User Id:</FormLabel>
-                            <Input hidden id="userid" name="userid" type='text'></Input>
+                            <Input hidden id="userid" name="userid" type='text' defaultValue={user_id}></Input>
                         </FormControl>
                         <FormControl isRequired mb={3}>
                             <FormLabel htmlFor='reportTitle'>Report Title:</FormLabel>

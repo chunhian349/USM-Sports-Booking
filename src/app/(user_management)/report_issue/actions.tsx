@@ -10,6 +10,8 @@ export async function SubmitReport(prevState: any, formData: FormData) {
     const report_desc = formData.get('reportDesc') as string ?? ''
     const report_screenshot = formData.get('screenshot') as File ?? null
 
+    console.log("User id: " + report_title)
+
     const screenshotURL = 'reportScreenshot/' + user_id + '/' + report_screenshot.name
     const { error: insertImageError } = await supabase
         .storage

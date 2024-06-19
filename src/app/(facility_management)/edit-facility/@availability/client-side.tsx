@@ -239,7 +239,7 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 								<FormLabel htmlFor="courtstatus">Court Status:</FormLabel>
 								<Switch id="courtstatus" name="courtstatus" size="lg" colorScheme="purple" defaultChecked/>
 							</FormControl>
-							<Input type="hidden" name="facility_id" value={facility_id}></Input>
+							<Input type="hidden" name="facility_id" defaultValue={facility_id}></Input>
 							<Center>
 								<Button onClick={handleAddCourt} rounded={20} colorScheme='purple' isLoading={isLoading}>
 									Submit
