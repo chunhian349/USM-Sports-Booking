@@ -33,25 +33,25 @@ export default function AccountForm({
     }, [formState, router])
 
   return (
-    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} mt="5lvh" borderWidth={2} borderColor="gray.400" rounded={20}>
+    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} mt="5lvh" borderWidth={3} borderColor="purple.600" rounded={20}>
       <Heading mb={5}>Profile</Heading>
 
       <form>
         <FormControl mb={3} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor="email">Email:</FormLabel>
-          <Input id="email" name="email" type="email" defaultValue={userData.email} _disabled={{textColor:'black', borderWidth:"2", borderColor:"gray.400"}} disabled />   
+          <Input id="email" name="email" type="email" defaultValue={userData.email} variant="filled" _disabled={{textColor:'black', borderWidth:"2"}} disabled />   
         </FormControl>
         <FormControl mb={3} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor="user_type">User Type:</FormLabel>
-          <Input id="user_type" name="user_type" type="user_type" defaultValue={userData.user_type} _disabled={{textColor:'black', borderWidth:"2", borderColor:"gray.400"}} disabled/>
+          <Input id="user_type" name="user_type" type="user_type" defaultValue={userData.user_type} variant="filled" _disabled={{textColor:'black', borderWidth:"2"}} disabled/>
         </FormControl >
         <FormControl isRequired mb={3} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor="fullname">Full Name:</FormLabel>
-          <Input id="fullname" name="fullname" defaultValue={userData.full_name} borderWidth={2} borderColor="gray.400" />
+          <Input id="fullname" name="fullname" defaultValue={userData.full_name} borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}} />
         </FormControl>
         <FormControl isRequired mb={5} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor='phonenum'>Phone Number:</FormLabel>
-          <Input id='phonenum' name='phonenum' defaultValue={userData.phone_num} borderWidth={2} borderColor="gray.400" />
+          <Input id='phonenum' name='phonenum' defaultValue={userData.phone_num} borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}} />
         </FormControl>
         <FormControl>
           <FormLabel hidden htmlFor='userid'>User ID:</FormLabel>

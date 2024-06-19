@@ -16,18 +16,18 @@ export default function LoginPage() {
   const [loginState, loginFormAction] =  useFormState(login, initialState)
 
   return (
-    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="gray.400" rounded={20}>
+    <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={3} borderColor="purple.600" rounded={20}>
       <Heading mb={10}>Login</Heading>
 
       <form>
         <FormControl isRequired mb={5} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor="email">Email:</FormLabel>
-          <Input id="email" name="email" type="email" borderWidth={2} borderColor="gray.400" placeholder='Enter email' />   
+          <Input id="email" name="email" type="email" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}} placeholder='Enter email' />   
         </FormControl>
         <FormControl isRequired mb={3} w={["90%", "20rem", "20rem"]}>
           <FormLabel htmlFor="password">Password:</FormLabel>
           <InputGroup>
-            <Input id="password" name="password" type={show ? "text" : "password"} borderWidth={2} borderColor="gray.400" placeholder='Enter password' />
+            <Input id="password" name="password" type={show ? "text" : "password"} borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}} placeholder='Enter password' />
             <InputRightElement width='4.5rem'>
               <Button h='1.75rem' size='sm' onClick={() => setShow(!show)}>
                 {show ? 'Hide' : 'Show'}

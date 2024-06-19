@@ -62,7 +62,7 @@ export default function ManagerClient({
                     imageUrl='/dashboard.jpg'
                     heading='Analytics Dashboard'
                     buttonText='View Analytics Dashboard' 
-                    buttonLink='/'
+                    buttonLink='/dashboard'
                 />
             </Flex>
             <Flex mb={3}>

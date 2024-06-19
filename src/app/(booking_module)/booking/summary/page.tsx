@@ -21,9 +21,9 @@ export default async function BookingSummaryPage({
 
     const { data: bookingData, error: selectBookingError } = await supabase
         .from('Booking')
-        .select('transaction_time, transaction_amount, transaction_method')
+        .select('booking_created_at, transaction_time, transaction_amount, transaction_method')
         .eq('booking_id', booking_id)
-        .returns<{transaction_time: string, transaction_amount: number, transaction_method: string}[]>()
+        .returns<{booking_created_at: string, transaction_time: string, transaction_amount: number, transaction_method: string}[]>()
         .single()
 
     if (selectBookingError || !bookingData) {
@@ -34,6 +34,10 @@ export default async function BookingSummaryPage({
     // Completed booking cannot access this page
     if (bookingData.transaction_time && bookingData.transaction_amount && bookingData.transaction_method) {
         redirect('/error/?error=Booking has been completed')
+    }
+
+    if (bookingData.booking_created_at.length == 0) {
+        redirect('/error/?error=booking_created_at is empty')
     }
 
     const { data: bookedTimeslot, error: selectTimeslotError } = await supabase
@@ -72,6 +76,11 @@ export default async function BookingSummaryPage({
         redirect('/error/?error=' + errorMessage)
     }
 
+    // Calculate booking expiry time (30 minutes)
+    const booking_expiry_time = new Date(bookingData.booking_created_at)
+    const BOOKING_TIME_LIMIT = 30 * 60 * 1000 // 30 minutes
+    booking_expiry_time.setTime(booking_expiry_time.getTime() + BOOKING_TIME_LIMIT)
+
     const bookingSummaryData: BookingSummaryData[] = [];
     bookedTimeslot.map((timeslot: any) => {
         bookingSummaryData.push({
@@ -83,5 +92,10 @@ export default async function BookingSummaryPage({
         })
     })
 
-    return <BookingSummary booking_id={booking_id} bookingSummaryData={bookingSummaryData} facilityData={facilityData.SportsFacility } />
+    return (
+        <BookingSummary 
+            bookingData={{booking_id: booking_id, booking_expiry_time: booking_expiry_time}} 
+            bookingSummaryData={bookingSummaryData} 
+            facilityData={facilityData.SportsFacility } />
+    )
 }

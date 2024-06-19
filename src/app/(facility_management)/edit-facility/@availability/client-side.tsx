@@ -1,6 +1,6 @@
 'use client'
 
-import { Container, Heading, Flex, Box, Spacer, Text, Input, Center, TableContainer, Table, Thead, Tr, Th, Button, Tbody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, FormControl, FormLabel, Switch, Link } from "@chakra-ui/react"
+import { Container, Heading, Flex, Box, Spacer, Text, Input, Center, TableContainer, Table, Thead, Tr, Th, Button, Tbody, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, FormControl, FormLabel, Switch, Link, useToast } from "@chakra-ui/react"
 import { CloseIcon } from "@chakra-ui/icons"
 import { useState, useEffect } from 'react'
 import { useRouter } from "next/navigation"
@@ -49,6 +49,8 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 	const timeslots = GenerateTimeslots(facilityData.facility_start_time, facilityData.facility_end_time, facilityData.timeslot_interval) 
 	const [ courtDataState, setCourtDataState ] = useState([])
 	const [ fetchSignal, setFetchSignal ] = useState(false)
+	const [ isLoading, setIsLoading ] = useState(false)
+	const toast = useToast()
 	const router = useRouter()
 
 	// Fetch court data
@@ -88,15 +90,20 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 	const addCourtModal = useDisclosure()
 
 	const handleAddCourt = async () => {
+		setIsLoading(true)
 		const court_name = document.getElementById("courtname") as HTMLInputElement
 		const court_status = document.getElementById("courtstatus") as HTMLInputElement
 
-		try{
-			await AddCourt(court_name.value, court_status.checked, facility_id)
-		} catch (error) {
-			console.error(error)
-		}
+		await AddCourt(court_name ? court_name.value : '', court_status ? court_status.checked : false, facility_id)
 
+		toast({
+			title: "Court added",
+			description: "Court has been added successfully",
+			status: "success",
+			duration: 3000,
+			isClosable: true,
+		})
+		setIsLoading(false)
 		setFetchSignal(!fetchSignal)
 	}
 
@@ -110,6 +117,7 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 		setFetchSignal(!fetchSignal)
 	}
 	
+	// Fetch timeslot data when court data or date changes
 	useEffect(() => {
 		//console.log("Use effect called")
 		async function fetchTimeslotData (courtData: any[], date: string) {
@@ -154,7 +162,7 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 	}, [courtDataState, date, router, timeslots.length])	
 
 	return (
-		<Container mt={5} maxW="100lvw" borderColor={"gray.300"} borderWidth={1} boxShadow={"lg"}>
+		<Container mt={5} maxW="100lvw" borderColor={"purple.300"} borderWidth={2} boxShadow={"lg"}>
 		<Container mt={5} maxW="90lvw">
 			<Flex mb={3}>
 				<Heading>Facility Availability</Heading>
@@ -170,7 +178,7 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 			</Flex>
 
 			<Text mb={2}>
-				Date: <Input type="date" maxW="200px" defaultValue={date} onChange={(event: any) => {setDate(event.target.value)}} borderColor={"black"} borderWidth={1} />
+				Date: <Input type="date" maxW="200px" defaultValue={date} onChange={(event: any) => {setDate(event.target.value)}} borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.300" _hover={{borderColor:"purple.300"}} />
 			</Text>
 
 			<TableContainer borderColor='black' borderWidth={1} mb={4}>
@@ -225,7 +233,7 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 						{/* <form onSubmit={handleAddCourt} action={addCourtWithId}> */}
 							<FormControl isRequired mb={5}>
 								<FormLabel htmlFor='courtname'>Court Name:</FormLabel>
-								<Input id='courtname' name="courtname" type='text' defaultValue="Court"></Input>
+								<Input id='courtname' name="courtname" type='text' defaultValue="Court" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}}></Input>
 							</FormControl>
 							<FormControl mb={5} w={{md:"20rem", lg: "20rem"}}>
 								<FormLabel htmlFor="courtstatus">Court Status:</FormLabel>
@@ -233,7 +241,7 @@ export default function FacilityAvailability({facility_id, facilityData}: {facil
 							</FormControl>
 							<Input type="hidden" name="facility_id" value={facility_id}></Input>
 							<Center>
-								<Button onClick={handleAddCourt} rounded={20} colorScheme='purple'>
+								<Button onClick={handleAddCourt} rounded={20} colorScheme='purple' isLoading={isLoading}>
 									Submit
 								</Button>
 							</Center>

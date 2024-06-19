@@ -25,14 +25,14 @@ export default function ResetPasswordPage() {
     }, [formState, router])
     
     return(
-        <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={2} borderColor="gray.400" rounded={20}>   
+        <Container w={["90lvw", "26.5rem", "40rem"]} centerContent py={10} my="10lvh" borderWidth={3} borderColor="purple.600" rounded={20}>   
             <Heading mb="50px" alignSelf="center">Reset Password</Heading>
             
             <form>
                 <FormControl isRequired mb={5} w={["90%", "20rem", "20rem"]}>
                     <FormLabel htmlFor='newPassword'>Enter New Password:</FormLabel>
                     <InputGroup size='md'>
-                        <Input id='newPassword' name="newPassword" borderWidth={2} borderColor="gray.300" type={show ? 'text' : 'password'} placeholder='Enter new password' />
+                        <Input id='newPassword' name="newPassword" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}} type={show ? 'text' : 'password'} placeholder='Enter new password' />
                         <InputRightElement width='4.5rem'>
                             <Button h='1.75rem' size='sm' onClick={() => setShow(!show)}>
                                 {show ? 'Hide' : 'Show'}

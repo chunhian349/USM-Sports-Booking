@@ -2,18 +2,18 @@
 
 import { useToast, Container, Center, Heading, VStack, Link, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, Button, Flex, Box, FormControl, FormLabel, Input, Image, Spacer, Divider, Slider, SliderMark, SliderTrack, SliderFilledTrack, SliderThumb, Tooltip, Tabs, TabList, Tab, TabPanels, TabPanel } from "@chakra-ui/react"
 import { ArrowBackIcon } from "@chakra-ui/icons"
-import { useState, useEffect } from "react"
-import { SubmitReview, SelectReview, type BookingDetails } from "./actions"
+import { useState } from "react"
+import { SubmitReview, type BookingDetails } from "./actions"
+import { useRouter } from 'next/navigation'
 
 export default function BookingHistory({
-    completedBooking, incompleteBooking, bookingDetails
+    completedBooking, incompleteBooking, bookingDetails, reviewData
 } : {
     completedBooking: { booking_id: string, transaction_time: string, transaction_method: string, transaction_amount: number }[], 
     incompleteBooking: { booking_id: string, booking_created_at: string }[], 
-    bookingDetails: Map<string, BookingDetails[]>
+    bookingDetails: Map<string, BookingDetails[]>,
+    reviewData: {fk_booking_id: string, review_rating: number, review_comment: string}[]
 }) {
-    const [ fetchSignal, setFetchSignal ] = useState(false)
-    const [ reviewData, setReviewData ] = useState<{fk_booking_id: string, review_rating: number, review_comment: string}[]>([])
     const [ showReviewForm, setShowReviewForm ] = useState(false)
     const [ showReview, setShowReview ] = useState(false)
     const [ showBookingDetails, setShowBookingDetails ] = useState(false)
@@ -23,6 +23,7 @@ export default function BookingHistory({
     const [ showTooltip, setShowTooltip ] = useState(false)
     const [ loading, setLoading ] = useState(false)
     const toast = useToast()
+    const router = useRouter()
 
     async function handleReviewSubmit() {
         setLoading(true)
@@ -50,20 +51,8 @@ export default function BookingHistory({
         }
         
         setLoading(false)
-        setFetchSignal(!fetchSignal)
+        router.refresh()
     }
-
-    // Fetch review data initially, fetch again when user makes a review
-    useEffect(() => {
-        async function fetchReviewData() {
-            const arr_booking_id = completedBooking.map((booking) => booking.booking_id)
-            const reviewData = await SelectReview(arr_booking_id)
-    
-            setReviewData(reviewData)
-        }
-        fetchReviewData()
-
-    }, [fetchSignal, completedBooking])
     
         // return (
         //     <Container maxW="90lvw" mt={5}>
@@ -260,7 +249,7 @@ export default function BookingHistory({
                                 </Slider>
 
                                 <FormLabel>Comment:</FormLabel>
-                                <Input h="15lvh" as="textarea" type='text' placeholder="Enter Your Comment Here" borderWidth={2} borderColor="gray.400"
+                                <Input h="15lvh" as="textarea" type='text' placeholder="Enter Your Comment Here" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}}
                                     onChange={(e)=>setComment(e.target.value)}></Input>
                             </FormControl>
 

@@ -262,9 +262,9 @@ export default function AdminClient({
                                 <Text fontSize={"sm"}>Report on {(new Date(selectedReport.report_created_at).toLocaleString('en-MY'))}</Text>
                                 <Text fontSize={"sm"}>Status: {selectedReport.report_status ? "Resolved" : "Unresolved"}</Text>
                                 <Text fontSize={"sm"} mb={1}>Description:</Text>
-                                <Textarea id="reportDesc" name="reportDesc" fontSize={'sm'} overflowWrap='break-word' defaultValue={selectedReport.report_desc} mb={2} readOnly></Textarea>
+                                <Textarea id="reportDesc" name="reportDesc" fontSize={'sm'} overflowWrap='break-word' defaultValue={selectedReport.report_desc} mb={2} readOnly borderColor="gray.400" borderWidth="2px" focusBorderColor="blue.500" _hover={{borderColor:"blue.500"}}></Textarea>
                                 <FormLabel htmlFor="feedback" fontSize={"sm"} mb={1}>Admin Feedback:</FormLabel>
-                                <Textarea id="feedback" name="feedback" fontSize='sm' defaultValue={selectedReport.admin_feedback}></Textarea>
+                                <Textarea id="feedback" name="feedback" fontSize='sm' defaultValue={selectedReport.admin_feedback} placeholder="Enter feedback on this report" borderColor="gray.400" borderWidth="2px" focusBorderColor="blue.500" _hover={{borderColor:"blue.500"}}></Textarea>
                             </VStack>
                         </ModalBody>
                         <ModalFooter justifyContent='center'>
@@ -303,7 +303,7 @@ export default function AdminClient({
                     </VStack>
                 </Box>
 
-                <Modal size='lg' isCentered isOpen={showAddManager} scrollBehavior="inside" onClose={()=>setShowAddManager(false)}>
+                <Modal size='md' isCentered isOpen={showAddManager} scrollBehavior="inside" onClose={()=>setShowAddManager(false)}>
                     <ModalOverlay bg='blackAlpha.300' />
                     <ModalContent>
                         <ModalHeader>Add Facility Manager</ModalHeader>
@@ -312,12 +312,12 @@ export default function AdminClient({
                         <ModalBody>
                             <FormControl isRequired mb={3}>
                                 <FormLabel htmlFor="email">Email:</FormLabel>
-                                <Input id="email" name="email" type="email" />   
+                                <Input id="email" name="email" type="email" placeholder="Enter email" borderColor="gray.400" borderWidth="2px" focusBorderColor="blue.500" _hover={{borderColor:"blue.500"}} />   
                             </FormControl>
                             <FormControl isRequired mb={3}>
                                 <FormLabel htmlFor="password">Password:</FormLabel>
                                 <InputGroup>
-                                <Input id="password" name="password" type={show ? "text" : "password"}/>
+                                <Input id="password" name="password" type={show ? "text" : "password"} placeholder="Enter password" borderColor="gray.400" borderWidth="2px" focusBorderColor="blue.500" _hover={{borderColor:"blue.500"}} />
                                     <InputRightElement width='4.5rem'>
                                         <Button h='1.75rem' size='sm' onClick={() => setShow(!show)}>{show ? 'Hide' : 'Show'}</Button>
                                     </InputRightElement>
@@ -325,11 +325,11 @@ export default function AdminClient({
                             </FormControl>
                             <FormControl mb={3}>
                                 <FormLabel htmlFor="full_name">Full Name:</FormLabel>
-                                <Input id="full_name" name="full_name" type="text"/>
+                                <Input id="full_name" name="full_name" type="text" placeholder="Enter name" borderColor="gray.400" borderWidth="2px" focusBorderColor="blue.500" _hover={{borderColor:"blue.500"}} />
                             </FormControl>
                             <FormControl mb={3}>
                                 <FormLabel htmlFor="phone_num">Phone Number:</FormLabel>
-                                <Input id="phone_num" name="phone_num" type="tel"/>
+                                <Input id="phone_num" name="phone_num" type="tel" placeholder="Enter phone number" borderColor="gray.400" borderWidth="2px" focusBorderColor="blue.500" _hover={{borderColor:"blue.500"}} />
                             </FormControl>
                         </ModalBody>
                         <ModalFooter justifyContent='center'>

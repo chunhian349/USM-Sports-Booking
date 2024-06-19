@@ -1,46 +1,84 @@
 'use client'
 
 import { Container, Heading, Flex, Image, Spacer, VStack, Text, Divider, Center, Box, Button, useToast  } from "@chakra-ui/react"
-import { MakePayment, isBookingExpired, type BookingSummaryData } from "./actions"
-import { useState, useEffect } from "react"
+import { MakePayment, type BookingSummaryData } from "./actions"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 
 export default function BookingSummary({ 
-    booking_id, bookingSummaryData, facilityData
+    bookingData, bookingSummaryData, facilityData
 } : { 
-    booking_id: string, bookingSummaryData: BookingSummaryData[], facilityData: {facility_name: string, facility_photo: string}
+    bookingData: {booking_id: string, booking_expiry_time: Date}, 
+    bookingSummaryData: BookingSummaryData[], 
+    facilityData: {facility_name: string, facility_photo: string}
 }) {
     const [paymentMethod, setPaymentMethod] = useState("Online Banking")
-    const [ isExpired, setIsExpired ] = useState(true)
     const [ isLoading, setIsLoading ] = useState(false)
     const toast = useToast()
+    const router = useRouter()
+    const isExpired = new Date() > bookingData.booking_expiry_time;
     let paymentAmount = 0
 
-    useEffect(() => {
-        isBookingExpired(booking_id).then((result) => {
-          setIsExpired(result);
-        });
-      }, [booking_id]);
+    // Countdown timer to show booking expiry time
+    var bookingExpiryTimer = setInterval(function() {
+        var now = new Date().getTime();
+        var distance = bookingData.booking_expiry_time.getTime() - now;
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        var expiryTimeElement = document.getElementById("expirytime");
+        if (expiryTimeElement !== null) {
+            expiryTimeElement.innerHTML = minutes + "m " + seconds + "s ";
+            if (distance < 0) {
+                clearInterval(bookingExpiryTimer);
+                expiryTimeElement.innerHTML = "EXPIRED";
+            }
+        }
+    }, 1000);
 
     async function HandlePaymentButton(booking_id:string, paymentMethod: string, paymentAmount: number) {
         setIsLoading(true)
-        const errorMessage = await MakePayment(booking_id, paymentMethod, paymentAmount)
+        const paymentResult = await MakePayment(booking_id, paymentMethod, paymentAmount)
 
-        if (errorMessage != undefined) {
+        // wait for 2 seconds to simulate payment processing
+        await new Promise(resolve => setTimeout(resolve, 2000))
+
+        if (paymentResult == "Payment successful") {
+            toast({
+                title: "Payment Successful",
+                description: "You have successfully made payment for your booking.",
+                status: "success",
+                duration: 9000,
+                position: "top",
+                isClosable: true,
+            })
+
+            router.push('/booking/successful/?booking_id=' + booking_id)
+
+        } else {
             toast({
                 title: "Failed to Make Payment",
-                description: errorMessage,
+                description: paymentResult,
                 status: "error",
                 duration: 5000,
                 position: "top",
                 isClosable: true,
             })
         }
+
         setIsLoading(false)
     }
 
     return (
         <Container my={10} px={8} py={5} maxH="90lvw" borderWidth={2} borderColor="#970bf5" rounded={10}>
-            <Heading mb={5}>Booking Summary</Heading>
+            <Flex>
+                <Heading mb={5}>Booking Summary</Heading>
+                <Spacer />
+                <VStack spacing={0} alignItems="end">
+                    <Text textColor='red' textAlign="end">{"Complete booking in "}</Text>
+                    <Text id="expirytime" textColor='red' textAlign="end"></Text>
+                </VStack>
+            </Flex>
             {
                 bookingSummaryData.map((data : BookingSummaryData, index: number) => {
                     paymentAmount += data.timeslot_rate
@@ -99,7 +137,7 @@ export default function BookingSummary({
                     isExpired ? 
                     (<Button rounded={20} isDisabled >Booking Expired</Button>) :
                     (<Button rounded={20} bg="#970bf5" color="white" _hover={{ bg: "#7a00cc"}} isLoading={isLoading}
-                        onClick={() => HandlePaymentButton(booking_id, paymentMethod, paymentAmount)} >Proceed to Payment</Button>)
+                        onClick={() => HandlePaymentButton(bookingData.booking_id, paymentMethod, paymentAmount)} >Proceed to Payment</Button>)
                 }
             </Center>
         </Container>

@@ -1,20 +1,192 @@
 'use client'
 
-import { Container, Heading, Box, Text, Image, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Divider, Input, Link, AspectRatio, FormLabel, FormControl, Icon, Switch, Center, TableContainer, Table, Thead, Tr, Th, Td, Tbody, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Checkbox } from "@chakra-ui/react"
+import { useToast, Container, Heading, Box, Text, Image, Button, Modal, ModalOverlay, ModalContent, ModalHeader, ModalCloseButton, ModalBody, ModalFooter, Divider, Input, Link, AspectRatio, FormLabel, FormControl, Icon, Switch, Center, TableContainer, Table, Thead, Tr, Th, Td, Tbody, NumberInput, NumberInputField, NumberInputStepper, NumberIncrementStepper, NumberDecrementStepper, Checkbox } from "@chakra-ui/react"
 import { EditIcon, InfoIcon, PhoneIcon } from "@chakra-ui/icons"
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { UpdateFacilityImage, UpdateFacilityDetails, UpdateFacilityDesc, UpdateFacilityRates, DeleteSportsFacility, type FacilityData } from './actions'
 import { FaMapLocationDot } from "react-icons/fa6";
 import { MdCategory } from "react-icons/md";
+import { useFormState, useFormStatus } from "react-dom"
+import { useRouter } from 'next/navigation'
+const initialState = { isActionSuccess: false, message: ''} 
+
+function FormButton({colorScheme, text}: {colorScheme: string, text: string}) {
+    const { pending } = useFormStatus()
+
+    return (
+        <Button type="submit" colorScheme={colorScheme} rounded={20} isLoading={pending}>
+            {text}
+        </Button>
+    )
+}
+
+
 
 export default function EditFacility({facilityData, user_id}: {facilityData: FacilityData, user_id: string}) {
-    
     const [ showUploadImg, setShowUploadImg ] = useState(false)
     const [ editDetails, setEditDetails ] = useState(false)
     const [ editDesc, setEditDesc ] = useState(false)
     const [ editRates, setEditRates ] = useState(false)
     const [ showDelete, setShowDelete ] = useState(false)
-    
+
+    const router = useRouter()
+    const toast = useToast()
+    const [updateImgFormState, updateImgFormAction] =  useFormState(UpdateFacilityImage, initialState)
+    const [updateDetailsFormState, updateDetailsFormAction] =  useFormState(UpdateFacilityDetails, initialState)
+    const [updateDescFormState, updateDescFormAction] =  useFormState(UpdateFacilityDesc, initialState)
+    const [updateRatesFormState, updateRatesFormAction] =  useFormState(UpdateFacilityRates, initialState)
+    const [deleteFacilityFormState, deleteFacilityFormAction] =  useFormState(DeleteSportsFacility, initialState)
+
+    // Show toast message when result of form action is updated
+    // Update image form
+    useEffect(() => {
+        if (updateImgFormState == initialState) {
+            return
+        }
+        
+        if (updateImgFormState.isActionSuccess) {
+            toast({
+                title: "Update Successful",
+                description: updateImgFormState.message,
+                status: "success",
+                duration: 3000,
+                position: "top",
+                isClosable: true,
+            })
+
+            router.refresh()
+        } else {
+            toast({
+                title: "Update Failed",
+                description: updateImgFormState.message,
+                status: "error",
+                duration: 5000,
+                position: "top",
+                isClosable: true,
+            })
+        }
+    }, [updateImgFormState, toast, router])
+
+    // Update details form
+    useEffect(() => {
+        if (updateDetailsFormState == initialState) {
+            return
+        }
+        
+        if (updateDetailsFormState.isActionSuccess) {
+            toast({
+                title: "Update Successful",
+                description: updateDetailsFormState.message,
+                status: "success",
+                duration: 3000,
+                position: "top",
+                isClosable: true,
+            })
+
+            router.refresh()
+
+        } else {
+            toast({
+                title: "Update Failed",
+                description: updateDetailsFormState.message,
+                status: "error",
+                duration: 5000,
+                position: "top",
+                isClosable: true,
+            })
+        }
+    }, [updateDetailsFormState, toast, router])
+
+    // Update description form
+    useEffect(() => {
+        if (updateDescFormState == initialState) {
+            return
+        }
+        
+        if (updateDescFormState.isActionSuccess) {
+            toast({
+                title: "Update Successful",
+                description: updateDescFormState.message,
+                status: "success",
+                duration: 3000,
+                position: "top",
+                isClosable: true,
+            })
+
+            router.refresh()
+
+        } else {
+            toast({
+                title: "Update Failed",
+                description: updateDescFormState.message,
+                status: "error",
+                duration: 5000,
+                position: "top",
+                isClosable: true,
+            })
+        }
+    }, [updateDescFormState, toast, router])
+
+    // Update rates form
+    useEffect(() => {
+        if (updateRatesFormState == initialState) {
+            return
+        }
+        
+        if (updateRatesFormState.isActionSuccess) {
+            toast({
+                title: "Update Successful",
+                description: updateRatesFormState.message,
+                status: "success",
+                duration: 3000,
+                position: "top",
+                isClosable: true,
+            })
+
+            router.refresh()
+
+        } else {
+            toast({
+                title: "Update Failed",
+                description: updateRatesFormState.message,
+                status: "error",
+                duration: 5000,
+                position: "top",
+                isClosable: true,
+            })
+        }
+    }, [updateRatesFormState, toast, router])
+
+    // Delete facility form
+    useEffect(() => {
+        if (deleteFacilityFormState == initialState) {
+            return
+        }
+        
+        if (deleteFacilityFormState.isActionSuccess) {
+            toast({
+                title: "Delete Successful",
+                description: deleteFacilityFormState.message,
+                status: "success",
+                duration: 9000,
+                position: "top",
+                isClosable: true,
+            })
+
+            router.push('/')
+
+        } else {
+            toast({
+                title: "Delete Failed",
+                description: deleteFacilityFormState.message,
+                status: "error",
+                duration: 5000,
+                position: "top",
+                isClosable: true,
+            })
+        }
+    }, [deleteFacilityFormState, toast, router])
+
     if (!facilityData)
     {
         return (
@@ -23,12 +195,6 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
             </Container>
         )
     }
-
-    // Bind the functions with the facility_id and user_id
-    const updateFacilityImageWithId = UpdateFacilityImage.bind(null, facilityData.facility_id, user_id)
-    const updateFacilityDetailsWithId = UpdateFacilityDetails.bind(null, facilityData.facility_id)
-    const updateFacilityDescWithId = UpdateFacilityDesc.bind(null, facilityData.facility_id)
-    const updateFacilityRatesWithId = UpdateFacilityRates.bind(null, facilityData.facility_id)
 
     return (
         <Container maxWidth="90lvw" mt={5}>
@@ -43,15 +209,19 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                 <ModalHeader>Edit Image</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                    <form action={updateFacilityImageWithId}>
+                    <form action={updateImgFormAction}>
+                        <FormControl hidden>
+                            <Input id='facilityid' name="facilityid" type='text' defaultValue={facilityData.facility_id} />
+                        </FormControl>
+                        <FormControl hidden>
+                            <Input id='userid' name="userid" type='text' defaultValue={user_id} />
+                        </FormControl>
                         <FormControl isRequired mb={5}>
                             <FormLabel htmlFor='image'>Upload a new image</FormLabel>
-                            <Input id='image' name="image" type='file' accept='image/*' pt={1}></Input>
+                            <Input id='image' name="image" type='file' accept='image/*' pt={1} variant="filled" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}} />
                         </FormControl>
                         <Center>
-                            <Button type="submit" colorScheme='purple' rounded={20}>
-                                Update Image
-                            </Button>
+                            <FormButton colorScheme='purple' text='Update' />
                         </Center>
                     </form>
                 </ModalBody>
@@ -69,36 +239,38 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                     <ModalHeader>Edit Facility Details</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <form action={updateFacilityDetailsWithId}>
+                        <form action={updateDetailsFormAction}>
+                            <FormControl hidden>
+                                <Input id="facilityid" name="facilityid" type="text" defaultValue={facilityData.facility_id} />
+                            </FormControl>
+
                             <FormControl isRequired mb={5} >
                                 <FormLabel htmlFor="name">Facility Name:</FormLabel>
-                                <Input id="name" name="name" type="text" required defaultValue={facilityData.facility_name} _hover={{borderColor:"#970bf5", borderWidth:"2"}} _focus={{borderColor:"#970bf5", borderWidth:"3"}}/>
+                                <Input id="name" name="name" type="text" required defaultValue={facilityData.facility_name} variant="filled" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}}/>
                             </FormControl>
 
                             <FormControl isRequired mb={5}>
                                 <FormLabel htmlFor="location">Location:</FormLabel>
-                                <Input id="location" name="location" type="text" required defaultValue={facilityData.facility_location} _hover={{borderColor:"#970bf5", borderWidth:"2"}} _focus={{borderColor:"#970bf5", borderWidth:"3"}}/>
+                                <Input id="location" name="location" type="text" required defaultValue={facilityData.facility_location} variant="filled" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}} />
                             </FormControl>
 
                             <FormControl isRequired mb={5}>
                                 <FormLabel htmlFor="sports">Sports Category:</FormLabel>
-                                <Input id="sports" name="sports" type="text" required defaultValue={facilityData.sports_category} _hover={{borderColor:"#970bf5", borderWidth:"2"}} _focus={{borderColor:"#970bf5", borderWidth:"3"}}/>
+                                <Input id="sports" name="sports" type="text" required defaultValue={facilityData.sports_category} variant="filled" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}}/>
                             </FormControl>
 
                             <FormControl isRequired mb={5}>
                                 <FormLabel htmlFor="phone">Phone Number:</FormLabel>
-                                <Input id="phone" name="phone" type="text" required defaultValue={facilityData.phone_num} _hover={{borderColor:"#970bf5", borderWidth:"2"}} _focus={{borderColor:"#970bf5", borderWidth:"3"}}/>
+                                <Input id="phone" name="phone" type="text" required defaultValue={facilityData.phone_num} variant="filled" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}}/>
                             </FormControl>
 
                             <FormControl mb={5}>
                                 <FormLabel htmlFor="status">Facility Status:</FormLabel>
-                                <Switch id="status" name="status" defaultChecked={facilityData.facility_status} size="lg" colorScheme="purple"/>
+                                <Switch id="status" name="status" defaultChecked={facilityData.facility_status} size="lg" colorScheme="purple" />
                             </FormControl>
 
                             <Center>
-                                <Button type="submit" colorScheme="purple" rounded="20">
-                                    Submit
-                                </Button>
+                                <FormButton colorScheme='purple' text='Update' />
                             </Center>
                         </form>
                     </ModalBody>
@@ -111,7 +283,6 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
             <Text fontWeight='bold' mb={1}><Icon as={FaMapLocationDot} mr='0.25rem'/>{facilityData.facility_location}</Text>
             <Text mb={1}><Icon as={MdCategory} mr='0.25rem'/>{facilityData.sports_category}</Text>
             <Text mb={1}><PhoneIcon mr='0.25rem' />{facilityData.phone_num}</Text>
-            {/* <Text mb={1}><TimeIcon mr='0.3rem'/>{facilityData.first_timeslot.substring(0, 5)} to {facilityData.last_timeslot.substring(0, 5)}</Text> */}
             <Text mb={1} textColor={(facilityData.facility_status? "green": "red")}><InfoIcon color="black" mr='0.3rem' />{(facilityData.facility_status? "Active": "Inactive")}</Text>
             <Divider my={3} borderColor="#970bf5"/>
 
@@ -124,15 +295,18 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                     <ModalHeader>Edit Description</ModalHeader>
                     <ModalCloseButton />
                     <ModalBody>
-                        <form action={updateFacilityDescWithId}>
+                        <form action={updateDescFormAction}>
+                            <FormControl hidden>
+                                <Input id="facilityid" name="facilityid" type="text" defaultValue={facilityData.facility_id} />
+                            </FormControl>
+
                             <FormControl isRequired mb={3}>
                                 <FormLabel htmlFor='description'>Description</FormLabel>
-                                <Input h="15lvh" as="textarea" id='description' name="description" type='text' defaultValue={facilityData.facility_desc}></Input>
+                                <Input h="15lvh" as="textarea" id='description' name="description" type='text' defaultValue={facilityData.facility_desc} variant="filled" borderColor="purple.200" borderWidth="2px" focusBorderColor="purple.500" _hover={{borderColor:"purple.500"}}></Input>
                             </FormControl>
+
                             <Center>
-                                <Button type="submit" colorScheme='purple' rounded='20'>
-                                    Submit
-                                </Button>
+                                <FormButton colorScheme='purple' text='Update' />
                             </Center>
                         </form>
                     </ModalBody>
@@ -153,8 +327,11 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                     <ModalContent>
                     <ModalHeader>Edit Booking Rates</ModalHeader>
                     <ModalCloseButton />
-                    <form action={updateFacilityRatesWithId}>
+                    <form action={updateRatesFormAction}>
                     <ModalBody>
+                        <FormControl hidden>
+                            <Input id="facilityid" name="facilityid" type="text" defaultValue={facilityData.facility_id} />
+                        </FormControl>
                         <TableContainer borderColor="#970bf5" borderWidth={2} rounded={10}>
                             <Table size='sm' colorScheme='purple'>
                                 <Thead>
@@ -168,8 +345,8 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                     <Tr>
                                         <Th>Student</Th>
                                         <Td>
-                                            <NumberInput id="normStudentRate" name="normStudentRate" defaultValue={facilityData.booking_rates.normal.student} min={0} step={1} precision={2}>
-                                                <NumberInputField />
+                                            <NumberInput id="normStudentRate" name="normStudentRate" defaultValue={facilityData.booking_rates.normal.student} min={0} step={1} precision={2} focusBorderColor="purple.500" variant="filled">
+                                                <NumberInputField borderColor="purple.200" borderWidth="2px" _hover={{borderColor:"purple.500"}} />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
                                                     <NumberDecrementStepper />
@@ -177,8 +354,8 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                             </NumberInput>
                                         </Td>
                                         <Td>
-                                            <NumberInput id="rushStudentRate" name="rushStudentRate" defaultValue={facilityData.booking_rates.rush.student} min={0} step={1} precision={2}>
-                                                <NumberInputField />
+                                            <NumberInput id="rushStudentRate" name="rushStudentRate" defaultValue={facilityData.booking_rates.rush.student} min={0} step={1} precision={2} focusBorderColor="purple.500" variant="filled">
+                                                <NumberInputField borderColor="purple.200" borderWidth="2px" _hover={{borderColor:"purple.500"}} />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
                                                     <NumberDecrementStepper />
@@ -189,8 +366,8 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                     <Tr>
                                         <Th>Staff</Th>
                                         <Td>
-                                            <NumberInput id="normStaffRate" name="normStaffRate" defaultValue={facilityData.booking_rates.normal.staff} min={0} step={1} precision={2}>
-                                                <NumberInputField />
+                                            <NumberInput id="normStaffRate" name="normStaffRate" defaultValue={facilityData.booking_rates.normal.staff} min={0} step={1} precision={2} focusBorderColor="purple.500" variant="filled">
+                                                <NumberInputField borderColor="purple.200" borderWidth="2px" _hover={{borderColor:"purple.500"}} />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
                                                     <NumberDecrementStepper />
@@ -198,8 +375,8 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                             </NumberInput>
                                         </Td>
                                         <Td>
-                                            <NumberInput id="rushStaffRate" name="rushStaffRate" defaultValue={facilityData.booking_rates.rush.staff} min={0} step={1} precision={2}>
-                                                <NumberInputField />
+                                            <NumberInput id="rushStaffRate" name="rushStaffRate" defaultValue={facilityData.booking_rates.rush.staff} min={0} step={1} precision={2} focusBorderColor="purple.500" variant="filled">
+                                                <NumberInputField borderColor="purple.200" borderWidth="2px" _hover={{borderColor:"purple.500"}} />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
                                                     <NumberDecrementStepper />
@@ -210,8 +387,8 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                     <Tr>
                                         <Th>Private</Th>
                                         <Td>
-                                            <NumberInput id="normPrivateRate" name="normPrivateRate" defaultValue={facilityData.booking_rates.normal.private} min={0} step={1} precision={2}>
-                                                <NumberInputField />
+                                            <NumberInput id="normPrivateRate" name="normPrivateRate" defaultValue={facilityData.booking_rates.normal.private} min={0} step={1} precision={2} focusBorderColor="purple.500" variant="filled">
+                                                <NumberInputField borderColor="purple.200" borderWidth="2px" _hover={{borderColor:"purple.500"}} />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
                                                     <NumberDecrementStepper />
@@ -219,8 +396,8 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                                             </NumberInput>
                                         </Td>
                                         <Td>
-                                            <NumberInput id="rushPrivateRate" name="rushPrivateRate" defaultValue={facilityData.booking_rates.rush.private} min={0} step={1} precision={2}>
-                                                <NumberInputField />
+                                            <NumberInput id="rushPrivateRate" name="rushPrivateRate" defaultValue={facilityData.booking_rates.rush.private} min={0} step={1} precision={2} focusBorderColor="purple.500" variant="filled">
+                                                <NumberInputField borderColor="purple.200" borderWidth="2px" _hover={{borderColor:"purple.500"}} />
                                                 <NumberInputStepper>
                                                     <NumberIncrementStepper />
                                                     <NumberDecrementStepper />
@@ -235,9 +412,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
 
                     <ModalFooter>
                         <Center>
-                            <Button type='submit' colorScheme='purple' rounded='20' /*onClick={()=>setEditRates(false)}*/>
-                                Submit
-                            </Button>
+                            <FormButton colorScheme='purple' text='Update' />
                         </Center>
                     </ModalFooter>
                     </form>
@@ -289,7 +464,7 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
             <Divider my={3} borderColor="#970bf5"/>
 
             <Box mt={3}>
-                <Button variant='outline' colorScheme='red'>
+                <Button colorScheme='red'>
                     <Text onClick={()=>setShowDelete(true)}>Delete Sports Facility</Text>
                 </Button>
             </Box>
@@ -300,17 +475,18 @@ export default function EditFacility({facilityData, user_id}: {facilityData: Fac
                 <ModalCloseButton />
                 <ModalBody>
                     {/* preventDefault is important */}
-                    <form onSubmit={(e)=>{e.preventDefault(); DeleteSportsFacility(facilityData.facility_id);}}>
-                    <Text mb={5} fontWeight='bold'>Are you sure you want to delete this facility?</Text>
-                    <FormControl isRequired mb={3}>
-                        <FormLabel >Confirmation</FormLabel>
-                        <Checkbox colorScheme="red" size='lg' isRequired><Text fontSize='md'>I have acknowledged that the delete action cannot be undone.</Text></Checkbox>
-                    </FormControl>
-                    <Center>
-                        <Button type='submit' colorScheme='red' rounded={20} mr={3}>
-                            Confirm Delete
-                        </Button>
-                    </Center>
+                    <form action={deleteFacilityFormAction}>
+                        <Text mb={5} fontWeight='bold'>Are you sure you want to delete this facility?</Text>
+                        <FormControl hidden>
+                            <Input id="facilityid" name="facilityid" type="text" defaultValue={facilityData.facility_id} />
+                        </FormControl>
+                        <FormControl isRequired mb={3}>
+                            <FormLabel >Confirmation</FormLabel>
+                            <Checkbox colorScheme="red" size='lg' isRequired><Text fontSize='md'>I have acknowledged that the delete action cannot be undone.</Text></Checkbox>
+                        </FormControl>
+                        <Center>
+                            <FormButton colorScheme='red' text='Confirm Delete' />
+                        </Center>
                     </form>
                 </ModalBody>
                 </ModalContent>

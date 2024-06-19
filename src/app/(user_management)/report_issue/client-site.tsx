@@ -168,19 +168,19 @@ export default function ReportIssueClient({
                     <form>
                         <FormControl>
                             <FormLabel hidden htmlFor='userid'>User Id:</FormLabel>
-                            <Input hidden id="userid" name="userid" type='text' defaultValue={user_id}></Input>
+                            <Input hidden id="userid" name="userid" type='text'></Input>
                         </FormControl>
                         <FormControl isRequired mb={3}>
                             <FormLabel htmlFor='reportTitle'>Report Title:</FormLabel>
-                            <Input id="reportTitle" name="reportTitle" type='text' placeholder="Enter Report Title"></Input>
+                            <Input id="reportTitle" name="reportTitle" type='text' placeholder="Enter Report Title" borderColor="red.200" borderWidth="2px" focusBorderColor="red.500" _hover={{borderColor:"red.500"}} />
                         </FormControl>
                         <FormControl isRequired mb={3}>
                             <FormLabel htmlFor='reportDesc'>Report Description:</FormLabel>                                        
-                            <Input id='reportDesc' name='reportDesc' h="15lvh" as="textarea" type='text' placeholder="Enter Description"></Input>
+                            <Input id='reportDesc' name='reportDesc' h="15lvh" as="textarea" type='text' placeholder="Enter Description" borderColor="red.200" borderWidth="2px" focusBorderColor="red.500" _hover={{borderColor:"red.500"}} />
                         </FormControl>
                         <FormControl isRequired mb={5}>
                             <FormLabel htmlFor="screenshot">Screenshot:</FormLabel>
-                            <Input id="screenshot" name="screenshot" type="file" accept='image/*' borderWidth={2} pt={1} required /> 
+                            <Input id="screenshot" name="screenshot" type="file" accept='image/*' pt={1} required borderColor="red.200" borderWidth="2px" focusBorderColor="red.500" _hover={{borderColor:"red.500"}} /> 
                         </FormControl>
 
                         <VStack mb={3}>

@@ -25,7 +25,9 @@ export type FacilityData = {
     }
 }
 
-export async function UpdateFacilityImage(facility_id: string, user_id: string, formData: FormData) {
+export async function UpdateFacilityImage(prevState: any, formData: FormData) {
+    const facility_id = formData.get('facilityid') as string ?? '';
+    const user_id = formData.get('userid') as string ?? '';
     const imageFile = formData.get('image') as File ?? null;
 
     // form unable to get image, image input name attribute might not match
@@ -42,8 +44,7 @@ export async function UpdateFacilityImage(facility_id: string, user_id: string, 
         .upload('facility/' + user_id + "/" + imageFile.name, imageFile)
     
         if (error && error.message !== 'The resource already exists') {
-            const errorMessage = "Update facility image storage failed (" + error.message + ")"
-            redirect('/error/?error=' + errorMessage)
+            return { isActionSuccess: true, message: error.message}
         }
     }
     
@@ -56,23 +57,27 @@ export async function UpdateFacilityImage(facility_id: string, user_id: string, 
         .eq('facility_id', facility_id)
 
         if (error) {
-            const errorMessage = "Update facility table failed (" + error.message + ")"
-            redirect('/error/?error=' + errorMessage)
+            return { isActionSuccess: true, message: error.message}
         }
     }
 
-    redirect('/edit-facility/?facility_id=' + facility_id)
+    return { isActionSuccess: true, message: "Facility image has been updated successfully."}
 }
 
-export async function UpdateFacilityDetails(facility_id: string, formData: FormData) {
-    //console.log("Facility ID: " + facility_id)
+export async function UpdateFacilityDetails(prevState: any, formData: FormData) {
+    const facility_id = formData.get('facilityid') as string ?? '';
     const facilityName = formData.get('name') as string ?? '';
     const location = formData.get('location') as string ?? '';
     const sportsCategory = formData.get('sports') as string ?? '';
     const phoneNumber = formData.get('phone') as string ?? '';
     const status = Boolean(formData.get('status'));
+    console.log(facility_id)
 
-    // TODO: Add validation for phone number
+    // Validation for phone number
+    const phoneNumRegex = /^[0-9+]*$/;
+    if (!phoneNumRegex.test(phoneNumber)) {
+        return { isActionSuccess: false, message: "Invalid phone number format." }
+    }
     
     const supabase = createClient()
     const { error } = await supabase
@@ -87,14 +92,14 @@ export async function UpdateFacilityDetails(facility_id: string, formData: FormD
     .eq('facility_id', facility_id)
 
     if (error) {
-        const errorMessage = "Update facility details failed (" + error.message + ")"
-        redirect('/error/?error=' + errorMessage)
+        return { isActionSuccess: false, message: error.message }
     }
 
-    redirect('/edit-facility/?facility_id=' + facility_id)
+    return { isActionSuccess: true, message: "Facility details have been updated successfully."}
 }
 
-export async function UpdateFacilityDesc(facility_id: string, formData: FormData) {
+export async function UpdateFacilityDesc(prevState: any, formData: FormData) {
+    const facility_id = formData.get('facilityid') as string ?? '';
     const description = formData.get('description') as string ?? '';
 
     const supabase = createClient()
@@ -104,15 +109,16 @@ export async function UpdateFacilityDesc(facility_id: string, formData: FormData
         .eq('facility_id', facility_id)
 
     if (error) {
-        const errorMessage = "Update facility description failed (" + error.message + ")"
-        redirect('/error/?error=' + errorMessage)
+        return { isActionSuccess: false, message: error.message }
     }
 
-    redirect('/edit-facility/?facility_id=' + facility_id)
+    return { isActionSuccess: true, message: "Facility description has been updated successfully."}
 }
 
-export async function UpdateFacilityRates(facility_id: string, formData: FormData) {
+export async function UpdateFacilityRates(prevState: any, formData: FormData) {
     const supabase = createClient()
+
+    const facility_id = formData.get('facilityid') as string ?? '';
 
     const bookingRatesObj = { 
         normal: {
@@ -133,15 +139,15 @@ export async function UpdateFacilityRates(facility_id: string, formData: FormDat
         .eq('facility_id', facility_id)
 
     if (error) {
-        const errorMessage = "Update facility rates failed (" + error.message + ")"
-        redirect('/error/?error=' + errorMessage)
+        return { isActionSuccess: false, message: error.message }
     }
 
-    redirect('/edit-facility/?facility_id=' + facility_id)
+    return { isActionSuccess: true, message: "Facility rates have been updated successfully."}
 }
 
-export async function DeleteSportsFacility(facility_id: string): Promise<any> {
-    
+export async function DeleteSportsFacility(prevState: any, formData: FormData): Promise<any> {
+    const facility_id = formData.get('facilityid') as string ?? '';
+
     const supabase = createClient()
     const { error } = await supabase
         .from('SportsFacility')
@@ -149,9 +155,8 @@ export async function DeleteSportsFacility(facility_id: string): Promise<any> {
         .eq('facility_id', facility_id)
 
     if (error) {
-        const errorMessage = "Delete sports facility failed (" + error.message + ")"
-        redirect('/error/?error=' + errorMessage)
+        return { isActionSuccess: false, message: error.message }
     }
 
-    redirect('/')
+    return { isActionSuccess: true, message: "Facility has been deleted, redirecting to homepage..."}
 }

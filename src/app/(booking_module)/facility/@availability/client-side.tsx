@@ -304,7 +304,7 @@ export default function FacilityAvailability({ facility_id, facilityData, user_t
 					title: "Make Booking Successfully",
 					description: "Directing to booking summary page...",
 					status: "success",
-					duration: 3000,
+					duration: 9000,
 					position: "top",
 					isClosable: true,
 				})

@@ -92,15 +92,17 @@ export async function SubmitFacilityForm(prevState: any, formData: FormData) {
     }
   ])
   .select('facility_id')
+  .returns<{ facility_id: string }[]>()
   .single()
 
   if (error) {
     return { isActionSuccess: false, message: error.message }
   }
 
-  if (!insertData) {
-    redirect('/error/?error=' + "Unexpected error, inserted data is empty without error message from Supabase.")
+  if (!insertData || insertData.facility_id.length === 0) {
+    redirect('/error/?error=' + "Unable to get new facility id, please try to access the new facility from homepage.")
   }
 
-  redirect('/edit-facility/?facility_id=' + insertData.facility_id)
+  // return facility id for redirect
+  return { isActionSuccess: true, message: insertData.facility_id}
 }

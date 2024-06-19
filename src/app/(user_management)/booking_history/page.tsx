@@ -3,7 +3,7 @@
 import BookingHistory from './client-site'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { type BookingDetails } from './actions'
+import { SelectReview, type BookingDetails } from './actions'
 
 export default async function BookingHistoryPage() {
     const supabase = createClient()
@@ -33,7 +33,7 @@ export default async function BookingHistoryPage() {
     if (selectBookingError || !bookingData) {
         console.log("Select Booking failed at booking history page")
         console.error(selectBookingError)
-        return <BookingHistory completedBooking={[]} incompleteBooking={[]} bookingDetails={new Map()} />
+        return <BookingHistory completedBooking={[]} incompleteBooking={[]} bookingDetails={new Map()} reviewData={[]} />
     } 
     // console.log(bookingData)
     const arr_booking_id: string[] = bookingData.map((booking) => booking.booking_id)
@@ -63,7 +63,7 @@ export default async function BookingHistoryPage() {
     if (selectTimeslotError || !bookedTimeslotData) {
         console.log("Select BookedTimeslot failed at booking history page")
         console.error(selectTimeslotError)
-        return <BookingHistory completedBooking={[]} incompleteBooking={[]} bookingDetails={new Map()} />
+        return <BookingHistory completedBooking={[]} incompleteBooking={[]} bookingDetails={new Map()} reviewData={[]} />
     }
 
     // User with no booking data can pass above error checks, pass zero length array props
@@ -91,6 +91,9 @@ export default async function BookingHistoryPage() {
     // console.log(completedBooking)
     // console.log(incompleteBooking)
 
+    // Get review data for completed booking
+    const reviewData = await SelectReview(completedBooking.map((booking) => booking.booking_id))
+
     // row is booking, column is bookedTimeslots of the booking
     // false alarms on type error, Court and SportsFacility are not arrays
     const bookingDetails = new Map<string, BookingDetails[]>()
@@ -113,5 +116,5 @@ export default async function BookingHistoryPage() {
 
     //console.log(bookingDetails)
 
-    return <BookingHistory completedBooking={completedBooking} incompleteBooking={incompleteBooking} bookingDetails={bookingDetails} />
+    return <BookingHistory completedBooking={completedBooking} incompleteBooking={incompleteBooking} bookingDetails={bookingDetails} reviewData={reviewData} />
 }
